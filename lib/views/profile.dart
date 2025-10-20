@@ -1,5 +1,3 @@
-import 'package:appchat_flutter/components/post_component.dart';
-import 'package:appchat_flutter/models/post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -123,10 +121,10 @@ class Profile extends StatelessWidget {
             ),
           ],
         ),
-        ...posts.map((post) {
-          final data = Post.fromMap(post);
-          return PostComponent(post: data);
-        }),
+        // ...posts.map((post) {
+        //   final data = Post.fromMap(post);
+        //   return PostComponent(post: data);
+        // }),
       ],
     );
   }

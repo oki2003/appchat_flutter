@@ -1,3 +1,4 @@
+import 'package:appchat_flutter/components/user_info.dart';
 import 'package:appchat_flutter/models/post.dart';
 import 'package:flutter/material.dart';
 
@@ -22,38 +23,11 @@ class PostComponent extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Row(
-            children: [
-              Image.network(
-                post.avatarURL,
-                width: 40,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Colors.grey,
-                    ),
-                    width: 40,
-                    height: 40,
-                    child: Icon(Icons.person, size: 24),
-                  );
-                },
-              ),
-              SizedBox(width: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    post.name,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  Text(
-                    post.createdAt.toDate().toString(),
-                    style: TextStyle(fontSize: 12, color: Colors.black54),
-                  ),
-                ],
-              ),
-            ],
+          UserInfo(
+            id: post.friend.id,
+            avatarURL: post.friend.avatarURL,
+            name: post.friend.name,
+            time: post.createdAt.toDate().toString(),
           ),
           SizedBox(height: 10),
           Text(post.content, textAlign: TextAlign.justify),

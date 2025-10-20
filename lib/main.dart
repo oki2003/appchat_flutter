@@ -2,17 +2,16 @@ import 'package:appchat_flutter/views/chat_detail.dart';
 import 'package:appchat_flutter/views/login.dart';
 import 'package:appchat_flutter/views/navigation.dart';
 import 'package:appchat_flutter/views/register.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -29,7 +28,7 @@ class MyApp extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF7851DE),
             foregroundColor: Colors.white,
-          )
+          ),
         ),
         textTheme: ThemeData.light().textTheme.copyWith(
           titleLarge: const TextStyle(
@@ -56,15 +55,15 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(color: Color(0xFFE4E4E7)),
           ),
-        )
+        ),
       ),
 
       initialRoute: '/',
       routes: {
-        '/' : (context) => Navigation(),
+        '/': (context) => Navigation(),
         '/login': (context) => Login(),
         '/register': (context) => Register(),
-        '/chat_detail': (context) => ChatDetail()
+        '/chat_detail': (context) => ChatDetail(),
       },
     );
   }

@@ -1,9 +1,10 @@
+import 'package:appchat_flutter/components/user_info.dart';
 import 'package:appchat_flutter/controller/chat_controller.dart';
 import 'package:appchat_flutter/controller/message_controller.dart';
 import 'package:appchat_flutter/models/friend.dart';
 import 'package:appchat_flutter/models/message.dart';
 import 'package:appchat_flutter/utils/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide UserInfo;
 import 'package:flutter/material.dart';
 
 class ChatDetail extends StatefulWidget {
@@ -48,38 +49,45 @@ class _ChatDetail extends State<ChatDetail> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            Image.network(
-              profile.avatarURL,
-              width: 40,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Colors.grey,
-                  ),
-                  width: 40,
-                  height: 40,
-                  child: Icon(Icons.person, size: 24),
-                );
-              },
-            ),
-            SizedBox(width: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  profile.name,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-                Text(
-                  "Đang hoạt động",
-                  style: TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-              ],
-            ),
-          ],
+        // title: Row(
+        //   children: [
+        //     Image.network(
+        //       profile.avatarURL,
+        //       width: 40,
+        //       errorBuilder: (context, error, stackTrace) {
+        //         return Container(
+        //           decoration: BoxDecoration(
+        //             borderRadius: BorderRadius.circular(50),
+        //             color: Colors.grey,
+        //           ),
+        //           width: 40,
+        //           height: 40,
+        //           child: Icon(Icons.person, size: 24),
+        //         );
+        //       },
+        //     ),
+        //     SizedBox(width: 20),
+        //     Column(
+        //       crossAxisAlignment: CrossAxisAlignment.start,
+        //       children: [
+        //         Text(
+        //           profile.name,
+        //           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        //         ),
+        //         Text(
+        //           "Đang hoạt động",
+        //           style: TextStyle(fontSize: 11, color: Colors.grey),
+        //         ),
+        //       ],
+        //     ),
+        //   ],
+        // ),
+        //
+        title: UserInfo(
+          id: profile.id,
+          avatarURL: profile.avatarURL,
+          name: profile.name,
+          time: "",
         ),
       ),
       body: Column(

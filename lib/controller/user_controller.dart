@@ -11,6 +11,7 @@ class UserController {
     } catch (e) {
       print('Lỗi khi lấy thông tin người dùng: $e');
       return Friend(
+        id: "Unknow",
         name: "Unknow",
         avatarURL: "https://avatar.iran.liara.run/public/35",
       );

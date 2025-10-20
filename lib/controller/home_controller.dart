@@ -1,28 +1,21 @@
+import 'package:appchat_flutter/controller/user_controller.dart';
 import 'package:appchat_flutter/models/post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeController {
-  Future<List<Post>> getPosts(fromCache) async {
+  Future<List<Post>> getPosts() async {
     final firestore = FirebaseFirestore.instance;
     final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    final source = fromCache ? Source.cache : Source.server;
+    final UserController userController = UserController();
 
     try {
       //get list of id from your friends
-      QuerySnapshot friendsSnapshot;
-      friendsSnapshot = await firestore
+      QuerySnapshot friendsSnapshot = await firestore
           .collection('friendships')
           .doc(currentUserId)
           .collection('friends')
-          .get(GetOptions(source: source));
-      if (friendsSnapshot.docs.isEmpty) {
-        friendsSnapshot = await firestore
-            .collection('friendships')
-            .doc(currentUserId)
-            .collection('friends')
-            .get(GetOptions(source: source));
-      }
+          .get();
 
       final friendIds = friendsSnapshot.docs.map((doc) => doc.id).toList();
       if (friendIds.isEmpty) {
@@ -41,7 +34,11 @@ class HomeController {
       final results = await Future.wait(futures);
 
       for (final snapshot in results) {
-        final posts = snapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
+        final futuresPosts = snapshot.docs.map((doc) async {
+          final friend = await userController.getInfoFriend(doc['authorId']);
+          return Post.fromDoc(doc, friend);
+        }).toList();
+        final posts = await Future.wait(futuresPosts);
         allPosts.addAll(posts);
       }
 

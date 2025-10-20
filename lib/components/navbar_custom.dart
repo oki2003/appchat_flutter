@@ -1,9 +1,13 @@
 import 'package:appchat_flutter/controller/authentication_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class NavbarCustom extends StatefulWidget {
   const NavbarCustom({super.key, required this.data});
+
   final List<Map<String, dynamic>> data;
+
   @override
   State<StatefulWidget> createState() {
     return _NavbarCustom();
@@ -21,6 +25,21 @@ class _NavbarCustom extends State<NavbarCustom> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacementNamed(context, '/login');
       });
+    } else {
+      // updateUserStatus();
+    }
+  }
+
+  void updateUserStatus() {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    try {
+      FirebaseDatabase.instance
+          .ref()
+          .child('users')
+          .child(currentUserId)
+          .update({'isOnline': true});
+    } catch (e) {
+      print("Lỗi khi cập nhật trạng thái: $e");
     }
   }
 

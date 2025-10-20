@@ -19,11 +19,11 @@ class _Home extends State<Home> {
   @override
   void initState() {
     super.initState();
-    posts = homeController.getPosts(true);
+    posts = homeController.getPosts();
   }
 
   Future<void> handleRefresh() async {
-    final Future<List<Post>> fetchPosts = homeController.getPosts(false);
+    final Future<List<Post>> fetchPosts = homeController.getPosts();
     setState(() {
       posts = fetchPosts;
     });
