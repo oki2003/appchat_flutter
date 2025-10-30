@@ -1,25 +1,34 @@
+import 'package:appchat_flutter/models/chat.dart';
 import 'package:appchat_flutter/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
-class MessageController {
-  Stream<List<Message>> getMessages(idChat) {
-    final firestore = FirebaseFirestore.instance;
+class ChatDetailViewModel extends ChangeNotifier {
+  Stream<List<Message>>? messages;
+  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  final TextEditingController textEditingController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  late Chat chat;
+  bool hasText = false;
+  bool hasScroll = false;
 
-    return firestore
+  getMessages() {
+    messages = FirebaseFirestore.instance
         .collection('chats')
-        .doc(idChat)
+        .doc(chat.idChat)
         .collection('messages')
         .snapshots()
         .asyncMap((snapshotList) {
-          List<Message> listMessages = [];
+          List<Message> newMessages = [];
           for (final snapshot in snapshotList.docs) {
             final data = Message.fromMap(snapshot.data());
-            listMessages.add(data);
+            newMessages.add(data);
           }
-          listMessages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-          return listMessages;
+          newMessages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+          return newMessages;
         });
+    notifyListeners();
   }
 
   sendMessage(message, idChat) async {
@@ -32,6 +41,11 @@ class MessageController {
       final data = docSnapshot.data();
       if (data!['currentIds'].length == 2) {
         isRead = true;
+        firestore.collection('chats').doc(idChat).update({
+          'count': 0,
+          'idLastUser': currentUserId,
+          'lastMessage': message,
+        });
       } else {
         firestore.collection('chats').doc(idChat).update({
           'count': data['count'] + 1,
@@ -45,6 +59,12 @@ class MessageController {
       'isRead': isRead,
       'senderId': currentUserId,
       'text': message,
+    });
+  }
+
+  updateCurrent() {
+    FirebaseFirestore.instance.collection('chats').doc(chat.idChat).update({
+      'currentIds': FieldValue.arrayRemove([currentUserId]),
     });
   }
 }

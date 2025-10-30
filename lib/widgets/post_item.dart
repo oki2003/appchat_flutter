@@ -1,5 +1,5 @@
-import 'package:appchat_flutter/components/user_info.dart';
 import 'package:appchat_flutter/models/post.dart';
+import 'package:appchat_flutter/widgets/user_info_component.dart';
 import 'package:flutter/material.dart';
 
 class PostComponent extends StatelessWidget {
@@ -23,14 +23,17 @@ class PostComponent extends StatelessWidget {
       ),
       child: Column(
         children: [
-          UserInfo(
-            id: post.friend.id,
-            avatarURL: post.friend.avatarURL,
-            name: post.friend.name,
+          UserInfoComponent(
+            id: post.authorId,
+            avatarURL: post.avatarURL,
+            name: post.authorName,
             time: post.createdAt.toDate().toString(),
           ),
           SizedBox(height: 10),
-          Text(post.content, textAlign: TextAlign.justify),
+          Text(
+            post.content.replaceAll(r'\n', '\n'),
+            textAlign: TextAlign.justify,
+          ),
         ],
       ),
     );

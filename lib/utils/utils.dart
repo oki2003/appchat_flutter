@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Utils {
-  combinedUid(String uid_1, String uid_2) {
+  String combinedUid(String uid_1, String uid_2) {
     if (uid_1.compareTo(uid_2) < 0) {
       return "${uid_1}_$uid_2";
     } else {

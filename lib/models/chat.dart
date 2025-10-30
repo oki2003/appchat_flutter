@@ -1,5 +1,5 @@
-import 'package:appchat_flutter/models/friend.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Chat {
   final String idChat;
@@ -7,7 +7,9 @@ class Chat {
   final String idLastUser;
   final String lastMessage;
   final Timestamp updatedAt;
-  final Friend friend;
+  final String idFriend;
+  final String nameFriend;
+  final String avatarURLFriend;
 
   const Chat({
     required this.idChat,
@@ -15,17 +17,28 @@ class Chat {
     required this.idLastUser,
     required this.lastMessage,
     required this.updatedAt,
-    required this.friend,
+    required this.idFriend,
+    required this.nameFriend,
+    required this.avatarURLFriend,
   });
 
-  factory Chat.fromMap(Map<String, dynamic> data, Friend friend) {
+  factory Chat.fromMap(Map<String, dynamic> data) {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    Map<String, dynamic> infoFriend;
+    if (currentUserId != (data['user_1']['id'])) {
+      infoFriend = data['user_1'];
+    } else {
+      infoFriend = data['user_2'];
+    }
     return Chat(
       count: data['count'] ?? 0,
       idChat: data['idChat'],
       idLastUser: data['idLastUser'],
       lastMessage: data['lastMessage'],
       updatedAt: data['updatedAt'] ?? Timestamp.now(),
-      friend: friend,
+      idFriend: infoFriend['id'],
+      nameFriend: infoFriend['name'],
+      avatarURLFriend: infoFriend['avatarURL'],
     );
   }
 }
