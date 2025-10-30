@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class UserInfoComponent extends StatelessWidget {
-  const UserInfoComponent({
+class UserInfo extends StatelessWidget {
+  const UserInfo({
     super.key,
     required this.id,
     required this.avatarURL,

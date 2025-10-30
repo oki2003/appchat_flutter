@@ -1,5 +1,5 @@
-import 'package:appchat_flutter/components/post_component.dart';
 import 'package:appchat_flutter/view_models/home_view_model.dart';
+import 'package:appchat_flutter/widgets/post_item.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -54,7 +54,7 @@ class _HomeScreen extends State<HomeScreen> {
             controller: homeViewModel.scrollController,
             itemCount: homeViewModel.posts.length,
             itemBuilder: (context, index) {
-              return PostComponent(post: homeViewModel.posts[index]);
+              return PostItem(post: homeViewModel.posts[index]);
             },
           ),
         );

@@ -1,5 +1,5 @@
-import 'package:appchat_flutter/components/post_component.dart';
 import 'package:appchat_flutter/view_models/profile_view_model.dart';
+import 'package:appchat_flutter/widgets/post_item.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -114,7 +114,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                 ],
               );
             } else {
-              return PostComponent(post: profileViewModel.posts[index - 1]);
+              return PostItem(post: profileViewModel.posts[index - 1]);
             }
           },
         );

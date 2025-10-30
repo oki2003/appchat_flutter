@@ -1,9 +1,9 @@
 import 'package:appchat_flutter/models/post.dart';
-import 'package:appchat_flutter/widgets/user_info_component.dart';
+import 'package:appchat_flutter/widgets/user_info.dart';
 import 'package:flutter/material.dart';
 
-class PostComponent extends StatelessWidget {
-  const PostComponent({super.key, required this.post});
+class PostItem extends StatelessWidget {
+  const PostItem({super.key, required this.post});
 
   final Post post;
 
@@ -23,7 +23,7 @@ class PostComponent extends StatelessWidget {
       ),
       child: Column(
         children: [
-          UserInfoComponent(
+          UserInfo(
             id: post.authorId,
             avatarURL: post.avatarURL,
             name: post.authorName,
