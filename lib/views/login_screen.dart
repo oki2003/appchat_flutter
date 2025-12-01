@@ -1,4 +1,7 @@
+import 'package:appchat_flutter/repositories/auth_repository.dart';
+import 'package:appchat_flutter/services/auth_service.dart';
 import 'package:appchat_flutter/view_models/authentication_view_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,7 +19,9 @@ class _LoginScreen extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    viewModel = AuthenticationViewModel();
+    final authService = AuthService(FirebaseAuth.instance);
+    final repository = AuthRepository(authService);
+    viewModel = AuthenticationViewModel(repository);
   }
 
   @override

@@ -88,11 +88,11 @@ class _Navigation extends State<Navigation> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          navigationViewModel.categories['icons']![index],
+                          navigationViewModel.categories['icons'][index],
                           size: 24,
                         ),
                         SizedBox(height: 4),
-                        Text(navigationViewModel.categories['label']![index]),
+                        Text(navigationViewModel.categories['label'][index]),
                       ],
                     ),
                   );
