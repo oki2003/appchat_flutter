@@ -1,5 +1,8 @@
+import 'package:appchat_flutter/repositories/post_repository.dart';
+import 'package:appchat_flutter/services/post_service.dart';
 import 'package:appchat_flutter/view_models/home_view_model.dart';
 import 'package:appchat_flutter/widgets/post_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,16 +20,11 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    homeViewModel = HomeViewModel();
+    PostService postService = PostService(FirebaseFirestore.instance);
+    PostRepository postRepository = PostRepository(postService);
+    homeViewModel = HomeViewModel(postRepository);
     homeViewModel.getPosts();
-    homeViewModel.scrollController.addListener(() {
-      if ((homeViewModel.scrollController.position.pixels ==
-              homeViewModel.scrollController.position.maxScrollExtent) &&
-          homeViewModel.hasMore) {
-        print("load them");
-        homeViewModel.loadMore();
-      }
-    });
+    homeViewModel.initScroll();
   }
 
   @override
