@@ -1,16 +1,15 @@
 import 'package:appchat_flutter/models/post.dart';
 import 'package:appchat_flutter/repositories/post_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final PostRepository postRepository;
+  final String currentUserId;
 
-  HomeViewModel(this.postRepository);
+  HomeViewModel(this.postRepository, this.currentUserId);
 
   List<Post> posts = [];
-  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
   final ScrollController scrollController = ScrollController();
   DocumentSnapshot? lastPost;
   bool isLoading = true;

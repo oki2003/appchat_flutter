@@ -3,6 +3,7 @@ import 'package:appchat_flutter/services/post_service.dart';
 import 'package:appchat_flutter/view_models/home_view_model.dart';
 import 'package:appchat_flutter/widgets/post_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,7 +23,10 @@ class _HomeScreen extends State<HomeScreen> {
     super.initState();
     PostService postService = PostService(FirebaseFirestore.instance);
     PostRepository postRepository = PostRepository(postService);
-    homeViewModel = HomeViewModel(postRepository);
+    homeViewModel = HomeViewModel(
+      postRepository,
+      FirebaseAuth.instance.currentUser!.uid,
+    );
     homeViewModel.getPosts();
     homeViewModel.initScroll();
   }
