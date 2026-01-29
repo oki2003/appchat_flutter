@@ -1,32 +1,69 @@
-# 💬 Mini Social Network
+# 📱 Mini Social Network App (Flutter)
 
-Ứng dụng **chat & mạng xã hội mini** được xây dựng bằng **Flutter** và **Firebase**, cho phép người
-dùng **đăng bài, nhắn tin realtime,** và **quản lý hồ sơ cá nhân**.  
-Dự án hướng tới trải nghiệm mượt mà, giao diện hiện đại và đồng bộ dữ liệu thời gian thực.
+Ứng dụng **mạng xã hội & chat realtime** được xây dựng bằng **Flutter**, sử dụng **REST API + Socket
+**
+cho backend chính, và **Firebase chỉ dùng cho Push Notification**.
+
+Dự án áp dụng **Feature-Based Architecture kết hợp BLoC (Cubit)**, hướng tới khả năng mở rộng,
+dễ bảo trì và phù hợp với kiến trúc app thực tế trong môi trường doanh nghiệp.
 
 ---
 
 ## 🚀 Tính năng chính
 
-- 📝 **Hiển thị bài đăng và tin nhắn:** Tối ưu với lazy loading và cache , giúp tăng tốc độ hiển thị
-  và giảm tải dữ liệu mạng.
-- 💬 **Chat realtime 1-1:** Tin nhắn được đồng bộ tức thì qua **Cloud Firestore**.
-- 🔐 **Xác thực người dùng:** An toàn với **Firebase Authentication**.
-- 🧩 **Kiến trúc MVVM:** Dễ mở rộng, dễ bảo trì và tách biệt rõ ràng giữa UI, logic và dữ liệu.
+- 📝 **Bài đăng (Posts)**
+    - Load dữ liệu từ REST API
+    - Hỗ trợ phân trang (lazy loading)
+    - Cache dữ liệu để tối ưu hiệu năng
+
+- 💬 **Chat realtime**
+    - Chat 1-1 thông qua **Socket**
+    - Cập nhật tin nhắn theo thời gian thực
+    - Tách riêng `chat` và `chat_detail` theo feature
+
+- 🔐 **Xác thực người dùng**
+    - Đăng nhập / đăng ký qua REST API
+    - Lưu token & thông tin user bằng `SharedPreferences`
+
+- 🔔 **Push Notification**
+    - Sử dụng **Firebase Cloud Messaging**
+    - Firebase **không dùng cho database**
+
+- 👤 **Hồ sơ cá nhân (Profile)**
+    - Xem và cập nhật thông tin người dùng
+    - Quản lý dữ liệu độc lập theo từng feature
+
+---
+
+## 🧠 Kiến trúc tổng thể
+
+- **Feature-Based Architecture**
+- **State Management:** BLoC / Cubit
+- **Data Flow một chiều**
+- Tách biệt rõ ràng giữa UI – Business Logic – Data
+
+```text
+UI (Screen)
+  ↓
+Cubit / Bloc
+  ↓
+API / Socket Service
+```
 
 ---
 
 ## 🧰 Công nghệ sử dụng
 
-| Thành phần             | Công nghệ                          |
-|------------------------|------------------------------------|
-| **Frontend**           | Flutter                            |
-| **State Management**   | Riverpod                           |
-| **Backend & Database** | Firebase Firestore                 |
-| **Authentication**     | Firebase Auth                      |
-| **Storage**            | Firebase Storage                   |
-| **Architecture**       | MVVM                               |
-| **Other**              | Cache, Lazy Loading, StreamBuilder |
+| Thành phần             | Công nghệ                |
+|------------------------|--------------------------|
+| Frontend               | Flutter                  |
+| State Management       | flutter_bloc (Cubit)     |
+| Networking             | Dio                      |
+| Realtime Communication | Socket                   |
+| Push Notification      | Firebase Cloud Messaging |
+| Local Storage          | SharedPreferences        |
+| Code Generation        | Freezed                  |
+| Architecture           | Feature-Based + BLoC     |
 
 ---
 
@@ -34,10 +71,14 @@ Dự án hướng tới trải nghiệm mượt mà, giao diện hiện đại v
 
 ```bash
 lib/
-├── services/        # Các class chịu trách nhiệm tương tác với Firebase
-├── repositories/    # Xử lý logic sau khi gọi Firebase 
-├── models/          # Định nghĩa các model dữ liệu (Post, Message,...)
-├── viewmodels/      # Xử lý logic & kết nối dữ liệu theo mô hình MVVM
-├── views/           # Giao diện màn hình (Home, Chat, Profile,...)
-├── widgets/         # Các widget tái sử dụng
-└── main.dart        # Điểm khởi chạy ứng dụng
+├── constants/
+├── core/
+├── enums/
+├── features/
+├── models/
+├── services/
+├── utils/
+├── widgets/
+├── firebase_options.dart
+└── main.dart
+```
