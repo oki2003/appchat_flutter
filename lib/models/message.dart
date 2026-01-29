@@ -1,24 +1,26 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Message {
-  final Timestamp createdAt;
+  final String content;
+  final int idUserSend;
+  final int idUserReceive;
   final bool isRead;
-  final String senderId;
-  final String text;
+  final int type;
+  final DateTime createdAt;
 
   const Message({
-    required this.createdAt,
+    required this.content,
+    required this.idUserSend,
+    required this.idUserReceive,
     required this.isRead,
-    required this.senderId,
-    required this.text,
+    required this.type,
+    required this.createdAt,
   });
 
-  factory Message.fromMap(Map<String, dynamic> data) {
-    return Message(
-      createdAt: data['createdAt'] ?? Timestamp.now(),
-      isRead: data['isRead'],
-      senderId: data['senderId'],
-      text: data['text'],
-    );
-  }
+  factory Message.fromJSON(Map<String, dynamic> json) => Message(
+    content: json['content'],
+    idUserSend: json['user_id_send'],
+    idUserReceive: json['user_id_receive'],
+    isRead: json['isRead'],
+    type: json['typeId'],
+    createdAt: DateTime.parse(json['createdAt']),
+  );
 }

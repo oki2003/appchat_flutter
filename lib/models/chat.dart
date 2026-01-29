@@ -1,44 +1,34 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:appchat_flutter/models/app_user.dart';
 
 class Chat {
   final String idChat;
-  final int count;
-  final String idLastUser;
-  final String lastMessage;
-  final Timestamp updatedAt;
-  final String idFriend;
-  final String nameFriend;
-  final String avatarURLFriend;
+  final int isBlock;
+  final AppUser friend;
+  final int unreadMessages;
+  final String? userIdReceive;
+  final bool status;
 
   const Chat({
     required this.idChat,
-    required this.count,
-    required this.idLastUser,
-    required this.lastMessage,
-    required this.updatedAt,
-    required this.idFriend,
-    required this.nameFriend,
-    required this.avatarURLFriend,
+    required this.isBlock,
+    required this.friend,
+    required this.unreadMessages,
+    required this.userIdReceive,
+    required this.status,
   });
 
-  factory Chat.fromMap(Map<String, dynamic> data) {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    Map<String, dynamic> infoFriend;
-    if (currentUserId != (data['user_1']['id'])) {
-      infoFriend = data['user_1'];
-    } else {
-      infoFriend = data['user_2'];
-    }
-    return Chat(
-      count: data['count'] ?? 0,
-      idChat: data['idChat'],
-      idLastUser: data['idLastUser'],
-      lastMessage: data['lastMessage'],
-      updatedAt: data['updatedAt'] ?? Timestamp.now(),
-      idFriend: infoFriend['id'],
-      nameFriend: infoFriend['name'],
-      avatarURLFriend: infoFriend['avatarURL'],
-    );
-  }
+  factory Chat.fromJSON(Map<String, dynamic> json) => Chat(
+    idChat: json["friendshipsID"],
+    isBlock: json["isBlock"],
+    friend: AppUser(
+      id: json["id"],
+      email: json["email"],
+      name: json["name"],
+      avatarURL: json["avatarURL"],
+      backgroundURL: json["backgroundURL"],
+    ),
+    unreadMessages: json["unreadMessages"],
+    status: json["status"],
+    userIdReceive: json["userIdReceive"],
+  );
 }
