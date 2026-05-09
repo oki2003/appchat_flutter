@@ -1,193 +1,583 @@
-import 'package:appchat_flutter/constants/api.dart';
+import 'package:appchat_flutter/core/overlay/toast_overlay.dart';
+import 'package:appchat_flutter/enums/message_status.dart';
 import 'package:appchat_flutter/enums/status_type.dart';
+import 'package:appchat_flutter/features/auth/cubit/auth_cubit.dart';
 import 'package:appchat_flutter/features/chat_detail/cubit/chat_detail_cubit.dart';
 import 'package:appchat_flutter/models/app_user.dart';
-import 'package:appchat_flutter/models/chat.dart';
 import 'package:appchat_flutter/models/message.dart';
-import 'package:appchat_flutter/widgets/user_presence.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:math';
 
 class ChatDetailScreen extends StatefulWidget {
-  const ChatDetailScreen({super.key});
+  final AppUser friend;
+  final int? chatId;
+
+  const ChatDetailScreen({
+    super.key,
+    required this.friend,
+    required this.chatId,
+  });
 
   @override
-  State<StatefulWidget> createState() {
-    return _ChatDetailScreen();
-  }
+  State<StatefulWidget> createState() => _ChatDetailScreen();
 }
 
 class _ChatDetailScreen extends State<ChatDetailScreen> {
-  final messageController = TextEditingController();
-  final ValueNotifier<bool> hasText = ValueNotifier(false);
+  final TextEditingController _textEditingController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final inputDecoration = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(20),
+    borderSide: BorderSide(style: BorderStyle.none),
+  );
+  bool _isTyping = false;
+  final ValueNotifier<bool> _isShowOption = ValueNotifier<bool>(false);
+  late final AppUser friend;
 
   @override
   void initState() {
+    friend = widget.friend;
+    context.read<ChatDetailCubit>().chatId = widget.chatId;
+    context.read<ChatDetailCubit>().fetchMessages(widget.chatId);
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final Chat chat = ModalRoute.of(context)!.settings.arguments as Chat;
-      context.read<ChatDetailCubit>().fetchMessages(chat.idChat);
-    });
   }
 
   @override
   void dispose() {
-    messageController.dispose();
+    _textEditingController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final Chat chat = ModalRoute.of(context)!.settings.arguments as Chat;
-    final AppUser friend = chat.friend;
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            UserPresence(
-              avatarURL: friend.avatarURL.toString(),
-              size: 40,
-              status: chat.status,
-            ),
-            SizedBox(width: 20),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: true,
+            title: _buildAppBar(friend),
+          ),
+          body: BlocListener<ChatDetailCubit, ChatDetailState>(
+            listener: (context, state) {
+              if (state.status == StatusType.error && state.msg != null) {
+                ToastOverlay.showToastBottom(state.msg!, false);
+              }
+            },
+            child: Column(
               children: [
-                Text(
-                  friend.name,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                Divider(color: Color(0xffe5e7eb), height: 1, thickness: 1),
+                BlocBuilder<ChatDetailCubit, ChatDetailState>(
+                  builder: (context, state) =>
+                      state.status == StatusType.loadmore
+                      ? Align(
+                          alignment: Alignment.center,
+                          child: CircularProgressIndicator(),
+                        )
+                      : const SizedBox.shrink(),
                 ),
-                chat.status
-                    ? const Text(
-                        "Đang hoạt động",
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      )
-                    : const SizedBox.shrink(),
-              ],
-            ),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
-              builder: (context, state) {
-                if (state.status == StatusType.loading ||
-                    state.status == StatusType.init) {
-                  return const Center(child: CircularProgressIndicator());
-                } else {
-                  if (state.messages.isEmpty) {
-                    return const Text("Chưa có hội thoại nào cả");
-                  } else {
-                    final List<Message> messages = state.messages;
-                    return Padding(
-                      padding: const EdgeInsetsGeometry.only(
-                        left: 10,
-                        right: 10,
+                Expanded(
+                  child: Stack(
+                    children: [
+                      BlocConsumer<ChatDetailCubit, ChatDetailState>(
+                        listenWhen: (prev, cur) {
+                          if (prev.messages.isNotEmpty &&
+                              cur.messages.isNotEmpty) {
+                            if (prev.messages.first != cur.messages.first &&
+                                cur.messages.first.senderId != friend.id) {
+                              return true;
+                            }
+                            return false;
+                          }
+                          return false;
+                        },
+                        listener: (context, state) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (_scrollController.hasClients) {
+                              _scrollController.animateTo(
+                                0,
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeOut,
+                              );
+                            }
+                          });
+                        },
+                        buildWhen: (previous, current) =>
+                            previous.messages != current.messages,
+                        builder: (context, state) {
+                          return NotificationListener<ScrollNotification>(
+                            onNotification: (scroll) {
+                              if (scroll.metrics.pixels ==
+                                  scroll.metrics.maxScrollExtent) {
+                                context
+                                    .read<ChatDetailCubit>()
+                                    .loadMoreMessages();
+                              }
+                              return false;
+                            },
+                            child: ListView.builder(
+                              reverse: true,
+                              controller: _scrollController,
+                              itemCount: state.messages.length,
+                              itemBuilder: (context, index) =>
+                                  state.messages[index].senderId == friend.id
+                                  ? _buildFriendMessage(state.messages[index])
+                                  : _buildMyMessage(state.messages[index]),
+                            ),
+                          );
+                        },
                       ),
-                      child: ListView.builder(
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) => Align(
-                          alignment: messages[index].idUserReceive == friend.id
-                              ? Alignment.centerLeft
-                              : Alignment.centerRight,
-                          child: _buildMessage(
-                            messages[index].type,
-                            messages[index].content,
-                            messages[index].idUserSend != friend.id,
+                      Positioned(
+                        bottom: 0,
+                        left: 10,
+                        child: TapRegion(
+                          onTapOutside: (_) => _isShowOption.value = false,
+                          child: _buildOption(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                BlocBuilder<ChatDetailCubit, ChatDetailState>(
+                  buildWhen: (previous, current) =>
+                      previous.isTyping != current.isTyping,
+                  builder: (context, state) => state.isTyping
+                      ? _buildTyping(friend)
+                      : const SizedBox.shrink(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 0,
+                  ),
+                  child: Row(
+                    children: [
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _isShowOption,
+                        child: IconButton(
+                          onPressed: () {
+                            _isShowOption.value = !_isShowOption.value;
+                          },
+                          icon: ShaderMask(
+                            shaderCallback: (bounds) => LinearGradient(
+                              colors: [Colors.purpleAccent, Colors.lightBlue],
+                            ).createShader(bounds),
+                            child: const Icon(
+                              Icons.grid_view_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        builder: (context, value, child) =>
+                            TweenAnimationBuilder(
+                              tween: Tween(
+                                begin: 0.0,
+                                end: value ? pi / 4 : 0.0,
+                              ),
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeOut,
+                              builder: (context, valueAnimation, _) =>
+                                  Transform.rotate(
+                                    angle: valueAnimation,
+                                    child: child,
+                                  ),
+                            ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: _textEditingController,
+                          onChanged: (value) {
+                            if (!_isTyping) {
+                              _isTyping = true;
+                              context.read<ChatDetailCubit>().startTyping(
+                                friend,
+                              );
+                              Future.delayed(Duration(seconds: 3), () {
+                                if (context.mounted) {
+                                  context.read<ChatDetailCubit>().stopTyping(
+                                    friend,
+                                  );
+                                  _isTyping = false;
+                                }
+                              });
+                            }
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Nhập tin nhắn",
+                            hintStyle: TextStyle(fontSize: 17),
+                            enabledBorder: inputDecoration,
+                            focusedBorder: inputDecoration,
+                            fillColor: Color(0xFFe9eaec),
                           ),
                         ),
                       ),
-                    );
-                  }
-                }
-              },
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Colors.grey,
-                  width: 1,
-                  style: BorderStyle.solid,
-                ),
-              ),
-            ),
-            padding: EdgeInsets.all(17),
-            height: 100,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: messageController,
-                    onChanged: (value) {
-                      hasText.value = value.isNotEmpty;
-                    },
-                    decoration: InputDecoration(hintText: 'Nhắn tin'),
+                      ValueListenableBuilder(
+                        valueListenable: _textEditingController,
+                        builder: (context, value, child) => IconButton(
+                          onPressed: () {
+                            if (value.text.isEmpty) return;
+                            context.read<ChatDetailCubit>().sendMessage(
+                              _textEditingController.text,
+                              friend,
+                              context.read<AuthCubit>().state.appUser,
+                            );
+                            _textEditingController.text = "";
+                          },
+                          icon: ShaderMask(
+                            shaderCallback: (bounds) => LinearGradient(
+                              colors: [Colors.purpleAccent, Colors.lightBlue],
+                            ).createShader(bounds),
+                            child: Icon(
+                              value.text.isEmpty ? Icons.thumb_up : Icons.send,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 10),
-                ValueListenableBuilder<bool>(
-                  valueListenable: hasText,
-                  builder: (context, value, child) {
-                    if (value == true) {
-                      return ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          padding: EdgeInsets.all(4),
-                        ),
-                        onPressed: () {
-                          hasText.value = false;
-                          messageController.clear();
-                        },
-                        child: const Icon(Icons.send_sharp),
-                      );
-                    } else {
-                      return IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.thumb_up,
-                          color: Color(0xFF7851DE),
-                        ),
-                      );
-                    }
-                  },
                 ),
               ],
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTyping(AppUser friend) {
+    return Text("${friend.displayName} đoạn soạn tin");
+  }
+
+  Widget _buildAppBar(AppUser friend) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 70, horizontal: 0),
+      child: Row(
+        children: [
+          SizedBox(
+            height: 45,
+            child: Image.asset(
+              friend.avatarUrl ?? "./assets/avatars/default.png",
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            friend.displayName,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: Colors.black),
+          ),
+          const Expanded(child: SizedBox.shrink()),
+          IconButton(onPressed: () {}, icon: Icon(Icons.call_outlined)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.videocam_outlined)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFriendMessage(Message message) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color(0xFFe9eaec),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+        child: Text(
+          message.content,
+          style: TextStyle(color: Colors.black, fontSize: 20),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMyMessage(Message message) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.purple, Colors.blue],
+          ),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+        child: Text(
+          message.content,
+          style: TextStyle(color: Colors.white, fontSize: 20),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOption(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return ValueListenableBuilder(
+      valueListenable: _isShowOption,
+      child: SizedBox(
+        width: screenWidth / 2,
+        child: Material(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.black.withValues(alpha: 0.1),
+              style: BorderStyle.solid,
+              width: 1,
+            ),
+          ),
+          child: Column(
+            children: [
+              _buildOptionItem("Gửi ảnh", Icons.image_rounded, () {
+                _isShowOption.value = false;
+              }, isFirst: true),
+              Container(
+                width: double.infinity,
+                color: Colors.black.withValues(alpha: 0.5),
+                height: 0.5,
+              ),
+              _buildOptionItem("Gửi video", Icons.video_collection_rounded, () {
+                _isShowOption.value = false;
+              }),
+              Container(
+                width: double.infinity,
+                color: Colors.black.withValues(alpha: 0.5),
+                height: 0.5,
+              ),
+              _buildOptionItem("Định vị", Icons.location_on_rounded, () {
+                _isShowOption.value = false;
+              }, isLast: true),
+            ],
+          ),
+        ),
+      ),
+      builder: (context, value, child) => TweenAnimationBuilder(
+        duration: Duration(milliseconds: 400),
+        tween: value
+            ? Tween(begin: 0.0, end: 1.0)
+            : Tween(begin: 1.0, end: 0.0),
+        curve: Curves.easeOutBack,
+        builder: (context, value, _) => Transform.scale(
+          scaleX: value,
+          scaleY: value,
+          alignment: Alignment.bottomLeft,
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionItem(
+    String text,
+    IconData icon,
+    onTap, {
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(isFirst ? 10 : 0),
+        topRight: Radius.circular(isFirst ? 10 : 0),
+        bottomLeft: Radius.circular(isLast ? 10 : 0),
+        bottomRight: Radius.circular(isLast ? 10 : 0),
+      ),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [Text(text), Icon(icon)],
+        ),
       ),
     );
   }
 }
 
-Widget _buildMessage(int type, String content, bool isMyMessage) {
-  return Container(
-    margin: EdgeInsets.only(bottom: 20),
-    padding: EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      color: isMyMessage ? Color(0xFF7851DE) : Color(0xFFF4F4F5),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (type == 1)
-          Text(
-            content,
-            style: TextStyle(color: isMyMessage ? Colors.white : Colors.black),
-          ),
-        if (type == 2) Icon(Icons.file_copy_rounded),
-        if (type == 3) Icon(Icons.description),
-        if (type == 4) Icon(Icons.slideshow),
-        if (type == 5) Icon(Icons.file_copy_rounded),
-        if (type == 6) Icon(Icons.picture_as_pdf),
-        if (type == 7)
-          Image.network("${Api.baseURL}/storage/${content.split("-")[1]}"),
-      ],
-    ),
-  );
-}
+// class ChatDetailScreen1 extends StatefulWidget {
+//   const ChatDetailScreen1({super.key});
+
+//   @override
+//   State<StatefulWidget> createState() {
+//     return _ChatDetailScreen1();
+//   }
+// }
+
+// class _ChatDetailScreen1 extends State<ChatDetailScreen1> {
+//   final messageController = TextEditingController();
+//   final ValueNotifier<bool> hasText = ValueNotifier(false);
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       final Chat chat = ModalRoute.of(context)!.settings.arguments as Chat;
+//       context.read<ChatDetailCubit>().fetchMessages(chat.idChat);
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     messageController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final Chat chat = ModalRoute.of(context)!.settings.arguments as Chat;
+//     final AppUser friend = chat.friend;
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Row(
+//           children: [
+//             UserPresence(
+//               avatarURL: friend.avatarUrl.toString(),
+//               size: 40,
+//               status: chat.status,
+//             ),
+//             SizedBox(width: 20),
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   friend.displayName,
+//                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+//                 ),
+//                 chat.status
+//                     ? const Text(
+//                         "Đang hoạt động",
+//                         style: TextStyle(fontSize: 11, color: Colors.grey),
+//                       )
+//                     : const SizedBox.shrink(),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//       body: Column(
+//         children: [
+//           Expanded(
+//             child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
+//               builder: (context, state) {
+//                 if (state.status == StatusType.loading ||
+//                     state.status == StatusType.init) {
+//                   return const Center(child: CircularProgressIndicator());
+//                 } else {
+//                   if (state.messages.isEmpty) {
+//                     return const Text("Chưa có hội thoại nào cả");
+//                   } else {
+//                     final List<Message> messages = state.messages;
+//                     return Padding(
+//                       padding: const EdgeInsetsGeometry.only(
+//                         left: 10,
+//                         right: 10,
+//                       ),
+//                       child: ListView.builder(
+//                         itemCount: messages.length,
+//                         itemBuilder: (context, index) => Align(
+//                           alignment: messages[index].senderId == friend.id
+//                               ? Alignment.centerLeft
+//                               : Alignment.centerRight,
+//                           child: _buildMessage(
+//                             messages[index].,
+//                             messages[index].content,
+//                             messages[index].idUserSend != friend.id,
+//                           ),
+//                         ),
+//                       ),
+//                     );
+//                   }
+//                 }
+//               },
+//             ),
+//           ),
+//           Container(
+//             decoration: BoxDecoration(
+//               border: Border(
+//                 top: BorderSide(
+//                   color: Colors.grey,
+//                   width: 1,
+//                   style: BorderStyle.solid,
+//                 ),
+//               ),
+//             ),
+//             padding: EdgeInsets.all(17),
+//             height: 100,
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: TextFormField(
+//                     controller: messageController,
+//                     onChanged: (value) {
+//                       hasText.value = value.isNotEmpty;
+//                     },
+//                     decoration: InputDecoration(hintText: 'Nhắn tin'),
+//                   ),
+//                 ),
+//                 const SizedBox(width: 10),
+//                 ValueListenableBuilder<bool>(
+//                   valueListenable: hasText,
+//                   builder: (context, value, child) {
+//                     if (value == true) {
+//                       return ElevatedButton(
+//                         style: ElevatedButton.styleFrom(
+//                           shape: CircleBorder(),
+//                           padding: EdgeInsets.all(4),
+//                         ),
+//                         onPressed: () {
+//                           hasText.value = false;
+//                           messageController.clear();
+//                         },
+//                         child: const Icon(Icons.send_sharp),
+//                       );
+//                     } else {
+//                       return IconButton(
+//                         onPressed: () {},
+//                         icon: const Icon(
+//                           Icons.thumb_up,
+//                           color: Color(0xFF7851DE),
+//                         ),
+//                       );
+//                     }
+//                   },
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// Widget _buildMessage(int type, String content, bool isMyMessage) {
+//   return Container(
+//     margin: EdgeInsets.only(bottom: 20),
+//     padding: EdgeInsets.all(10),
+//     decoration: BoxDecoration(
+//       color: isMyMessage ? Color(0xFF7851DE) : Color(0xFFF4F4F5),
+//       borderRadius: BorderRadius.circular(10),
+//     ),
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         if (type == 1)
+//           Text(
+//             content,
+//             style: TextStyle(color: isMyMessage ? Colors.white : Colors.black),
+//           ),
+//         if (type == 2) Icon(Icons.file_copy_rounded),
+//         if (type == 3) Icon(Icons.description),
+//         if (type == 4) Icon(Icons.slideshow),
+//         if (type == 5) Icon(Icons.file_copy_rounded),
+//         if (type == 6) Icon(Icons.picture_as_pdf),
+//         if (type == 7)
+//           Image.network("${Api.baseURL}/storage/${content.split("-")[1]}"),
+//       ],
+//     ),
+//   );
+// }

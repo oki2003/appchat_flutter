@@ -1,26 +1,54 @@
-class Message {
-  final String content;
-  final int idUserSend;
-  final int idUserReceive;
-  final bool isRead;
-  final int type;
-  final DateTime createdAt;
+import "package:appchat_flutter/enums/message_status.dart";
 
-  const Message({
+class Message {
+  int? id;
+  int? chatId;
+  final int senderId;
+  final String content;
+  DateTime? createdAt;
+  MessageStatus status;
+
+  Message({
+    this.id,
+    this.chatId,
+    required this.senderId,
     required this.content,
-    required this.idUserSend,
-    required this.idUserReceive,
-    required this.isRead,
-    required this.type,
-    required this.createdAt,
+    this.createdAt,
+    this.status = MessageStatus.sent,
   });
 
+  Message copyWith({
+    int? id,
+    int? chatId,
+    int? senderId,
+    String? content,
+    DateTime? createdAt,
+    MessageStatus? status,
+  }) {
+    return Message(
+      id: id ?? this.id,
+      chatId: chatId ?? this.chatId,
+      senderId: senderId ?? this.senderId,
+      content: content ?? this.content,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+    );
+  }
+
   factory Message.fromJSON(Map<String, dynamic> json) => Message(
-    content: json['content'],
-    idUserSend: json['user_id_send'],
-    idUserReceive: json['user_id_receive'],
-    isRead: json['isRead'],
-    type: json['typeId'],
-    createdAt: DateTime.parse(json['createdAt']),
+    id: json["id"],
+    chatId: json["chatId"],
+    senderId: json["senderId"],
+    content: json["content"],
+    createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+    status: MessageStatus.sent,
   );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "chatId": chatId,
+    "senderId": senderId,
+    "content": content,
+    "createdAt": createdAt,
+  };
 }

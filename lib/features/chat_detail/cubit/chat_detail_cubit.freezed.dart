@@ -19,6 +19,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ChatDetailState {
   StatusType get status => throw _privateConstructorUsedError;
   String? get msg => throw _privateConstructorUsedError;
+  bool get isTyping => throw _privateConstructorUsedError;
   List<Message> get messages => throw _privateConstructorUsedError;
 
   /// Create a copy of ChatDetailState
@@ -35,7 +36,12 @@ abstract class $ChatDetailStateCopyWith<$Res> {
     $Res Function(ChatDetailState) then,
   ) = _$ChatDetailStateCopyWithImpl<$Res, ChatDetailState>;
   @useResult
-  $Res call({StatusType status, String? msg, List<Message> messages});
+  $Res call({
+    StatusType status,
+    String? msg,
+    bool isTyping,
+    List<Message> messages,
+  });
 }
 
 /// @nodoc
@@ -55,6 +61,7 @@ class _$ChatDetailStateCopyWithImpl<$Res, $Val extends ChatDetailState>
   $Res call({
     Object? status = null,
     Object? msg = freezed,
+    Object? isTyping = null,
     Object? messages = null,
   }) {
     return _then(
@@ -67,6 +74,10 @@ class _$ChatDetailStateCopyWithImpl<$Res, $Val extends ChatDetailState>
                 ? _value.msg
                 : msg // ignore: cast_nullable_to_non_nullable
                       as String?,
+            isTyping: null == isTyping
+                ? _value.isTyping
+                : isTyping // ignore: cast_nullable_to_non_nullable
+                      as bool,
             messages: null == messages
                 ? _value.messages
                 : messages // ignore: cast_nullable_to_non_nullable
@@ -86,7 +97,12 @@ abstract class _$$ChatDetailStateImplCopyWith<$Res>
   ) = __$$ChatDetailStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({StatusType status, String? msg, List<Message> messages});
+  $Res call({
+    StatusType status,
+    String? msg,
+    bool isTyping,
+    List<Message> messages,
+  });
 }
 
 /// @nodoc
@@ -105,6 +121,7 @@ class __$$ChatDetailStateImplCopyWithImpl<$Res>
   $Res call({
     Object? status = null,
     Object? msg = freezed,
+    Object? isTyping = null,
     Object? messages = null,
   }) {
     return _then(
@@ -117,6 +134,10 @@ class __$$ChatDetailStateImplCopyWithImpl<$Res>
             ? _value.msg
             : msg // ignore: cast_nullable_to_non_nullable
                   as String?,
+        isTyping: null == isTyping
+            ? _value.isTyping
+            : isTyping // ignore: cast_nullable_to_non_nullable
+                  as bool,
         messages: null == messages
             ? _value._messages
             : messages // ignore: cast_nullable_to_non_nullable
@@ -130,8 +151,9 @@ class __$$ChatDetailStateImplCopyWithImpl<$Res>
 
 class _$ChatDetailStateImpl implements _ChatDetailState {
   const _$ChatDetailStateImpl({
-    this.status = StatusType.init,
+    this.status = StatusType.loading,
     this.msg,
+    this.isTyping = false,
     final List<Message> messages = const [],
   }) : _messages = messages;
 
@@ -140,6 +162,9 @@ class _$ChatDetailStateImpl implements _ChatDetailState {
   final StatusType status;
   @override
   final String? msg;
+  @override
+  @JsonKey()
+  final bool isTyping;
   final List<Message> _messages;
   @override
   @JsonKey()
@@ -151,7 +176,7 @@ class _$ChatDetailStateImpl implements _ChatDetailState {
 
   @override
   String toString() {
-    return 'ChatDetailState(status: $status, msg: $msg, messages: $messages)';
+    return 'ChatDetailState(status: $status, msg: $msg, isTyping: $isTyping, messages: $messages)';
   }
 
   @override
@@ -161,6 +186,8 @@ class _$ChatDetailStateImpl implements _ChatDetailState {
             other is _$ChatDetailStateImpl &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.msg, msg) || other.msg == msg) &&
+            (identical(other.isTyping, isTyping) ||
+                other.isTyping == isTyping) &&
             const DeepCollectionEquality().equals(other._messages, _messages));
   }
 
@@ -169,6 +196,7 @@ class _$ChatDetailStateImpl implements _ChatDetailState {
     runtimeType,
     status,
     msg,
+    isTyping,
     const DeepCollectionEquality().hash(_messages),
   );
 
@@ -188,6 +216,7 @@ abstract class _ChatDetailState implements ChatDetailState {
   const factory _ChatDetailState({
     final StatusType status,
     final String? msg,
+    final bool isTyping,
     final List<Message> messages,
   }) = _$ChatDetailStateImpl;
 
@@ -195,6 +224,8 @@ abstract class _ChatDetailState implements ChatDetailState {
   StatusType get status;
   @override
   String? get msg;
+  @override
+  bool get isTyping;
   @override
   List<Message> get messages;
 

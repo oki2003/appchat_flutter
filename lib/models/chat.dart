@@ -1,34 +1,32 @@
-import 'package:appchat_flutter/models/app_user.dart';
+import "package:appchat_flutter/models/app_user.dart";
+
+enum ChatType { private, group }
 
 class Chat {
-  final String idChat;
-  final int isBlock;
+  final int id;
+  final ChatType type;
+  final String? name;
+  final String? avatarUrl;
+  final String lastMessage;
   final AppUser friend;
-  final int unreadMessages;
-  final String? userIdReceive;
-  final bool status;
 
   const Chat({
-    required this.idChat,
-    required this.isBlock,
+    required this.id,
+    required this.type,
+    this.name,
+    this.avatarUrl,
+    required this.lastMessage,
     required this.friend,
-    required this.unreadMessages,
-    required this.userIdReceive,
-    required this.status,
   });
 
   factory Chat.fromJSON(Map<String, dynamic> json) => Chat(
-    idChat: json["friendshipsID"],
-    isBlock: json["isBlock"],
-    friend: AppUser(
-      id: json["id"],
-      email: json["email"],
-      name: json["name"],
-      avatarURL: json["avatarURL"],
-      backgroundURL: json["backgroundURL"],
-    ),
-    unreadMessages: json["unreadMessages"],
-    status: json["status"],
-    userIdReceive: json["userIdReceive"],
+    id: json["id"],
+    type: ChatType.values.byName(json["type"]),
+    name: json["name"],
+    avatarUrl: json["avatarUrl"],
+    lastMessage: json["lastMessage"]["type"] == "text"
+        ? json["lastMessage"]["content"]
+        : "Đã gửi một file",
+    friend: AppUser.fromJSON(json["participants"][0]["user"]),
   );
 }

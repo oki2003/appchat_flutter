@@ -1,23 +1,20 @@
 class AppUser {
   final int id;
-  final String email;
-  final String name;
-  final String? avatarURL;
-  final String? backgroundURL;
+  final String displayName;
+  final String userName;
+  final String? avatarUrl;
 
   const AppUser({
     required this.id,
-    required this.email,
-    required this.name,
-    required this.avatarURL,
-    required this.backgroundURL,
+    required this.displayName,
+    required this.userName,
+    required this.avatarUrl,
   });
 
   factory AppUser.fromJSON(Map<String, dynamic> json) => AppUser(
     id: json["id"],
-    email: json["email"],
-    name: json["name"],
-    avatarURL: json["avatarURL"],
-    backgroundURL: json["backgroundURL"],
+    displayName: json["displayName"],
+    userName: json["userName"],
+    avatarUrl: json["avatarUrl"],
   );
 }

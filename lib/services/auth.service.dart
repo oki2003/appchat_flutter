@@ -4,14 +4,15 @@ import 'package:appchat_flutter/constants/api.dart';
 import 'package:appchat_flutter/core/network/api_client.dart';
 import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/services/local_storage.dart';
+import 'package:appchat_flutter/services/socket.service.dart';
 import 'package:dio/dio.dart';
 
 class AuthService {
-  Future<AppUser> login(email, password) async {
+  Future<AppUser> login(userName, password) async {
     try {
       final response = await ApiClient.dio.post(
         Api.login,
-        data: {"email": email, "password": password},
+        data: {"userName": userName, "password": password},
       );
       final AppUser currentUser = await _handleAuthServiceSuccess(response);
       return currentUser;
@@ -20,11 +21,19 @@ class AuthService {
     }
   }
 
-  Future<AppUser> register(String email, String name, String password) async {
+  Future<AppUser> register(
+    String userName,
+    String displayName,
+    String password,
+  ) async {
     try {
       final response = await ApiClient.dio.post(
         Api.register,
-        data: {"email": email, "name": name, "password": password},
+        data: {
+          "userName": userName,
+          "displayName": displayName,
+          "password": password,
+        },
       );
       final AppUser currentUser = await _handleAuthServiceSuccess(response);
       return currentUser;
@@ -37,12 +46,14 @@ class AuthService {
     final token = LocalStorage.pref?.getString("token");
     if (token != null) {
       try {
-        final response = await ApiClient.dio.get(
-          Api.auth,
-          options: Options(headers: {"Cookie": "token=$token"}),
+        final response = await ApiClient.dio.get(Api.auth);
+        final currentUser = response.data["data"];
+        await LocalStorage.pref!.setString(
+          "currentUser",
+          jsonEncode(currentUser),
         );
-        final AppUser currentUser = await _handleAuthServiceSuccess(response);
-        return currentUser;
+        SocketService().connect(token);
+        return AppUser.fromJSON(currentUser);
       } on DioException catch (e) {
         if (e.response?.statusCode == 403) {
           await LocalStorage.pref!.remove("token");
@@ -54,10 +65,11 @@ class AuthService {
   }
 
   Future<AppUser> _handleAuthServiceSuccess(response) async {
-    final token = response.data["token"];
-    final currentUser = response.data["currentUser"];
+    final token = response.data["data"]["token"];
+    final currentUser = response.data["data"];
     await LocalStorage.pref!.setString("token", token);
     await LocalStorage.pref!.setString("currentUser", jsonEncode(currentUser));
+    SocketService().connect(token);
     return AppUser.fromJSON(currentUser);
   }
 }

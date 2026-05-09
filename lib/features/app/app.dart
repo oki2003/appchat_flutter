@@ -1,42 +1,36 @@
 import 'package:appchat_flutter/features/app/view_model/app.vm.dart';
 import 'package:flutter/material.dart';
-import 'package:stacked/stacked.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
 
   @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  late final AppViewModel _appViewModel;
+
+  @override
+  void initState() {
+    _appViewModel = AppViewModel();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _appViewModel.currentIndex.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<AppViewModel>.reactive(
-      viewModelBuilder: () => AppViewModel(),
-      builder: (context, viewModel, child) => Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 70,
-          title: Text(
-            viewModel.categories['label'][viewModel.currentIndex],
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          backgroundColor: Colors.white,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Color(0xFFE4E4E7), width: 1),
-              ),
-            ),
-          ),
-          automaticallyImplyLeading: false,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(right: 10, left: 10),
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(
-              context,
-            ).copyWith(scrollbars: false),
-            child: IndexedStack(
-              index: viewModel.currentIndex,
-              children: viewModel.categories['widget'].cast<Widget>(),
-            ),
-          ),
+    return ListenableBuilder(
+      listenable: _appViewModel.currentIndex,
+      builder: (context, child) => Scaffold(
+        body: IndexedStack(
+          index: _appViewModel.currentIndex.value,
+          children: _appViewModel.categories['widget'].cast<Widget>(),
         ),
         bottomNavigationBar: Container(
           height: 70,
@@ -46,25 +40,25 @@ class App extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(viewModel.categories['icons'].length, (
+            children: List.generate(_appViewModel.categories['icons'].length, (
               index,
             ) {
               return TextButton(
                 onPressed: () {
-                  viewModel.loadTab(index);
+                  _appViewModel.loadTab(index);
                 },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.all(8),
-                  foregroundColor: viewModel.currentIndex == index
+                  foregroundColor: _appViewModel.currentIndex.value == index
                       ? Color(0xFF7851DE)
                       : Colors.grey,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(viewModel.categories['icons'][index], size: 24),
+                    Icon(_appViewModel.categories['icons'][index], size: 24),
                     SizedBox(height: 4),
-                    Text(viewModel.categories['label'][index]),
+                    Text(_appViewModel.categories['label'][index]),
                   ],
                 ),
               );

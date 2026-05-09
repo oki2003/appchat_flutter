@@ -1,6 +1,7 @@
 import 'package:appchat_flutter/enums/status_type.dart';
 import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/services/auth.service.dart';
+import 'package:appchat_flutter/services/local_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,10 +13,10 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit() : super(const AuthState());
 
-  Future<void> login(String email, String password) async {
+  Future<void> login(String userName, String password) async {
     emit(state.copyWith(status: StatusType.loading));
     try {
-      final AppUser user = await authService.login(email, password);
+      final AppUser user = await authService.login(userName, password);
       emit(
         state.copyWith(
           status: StatusType.loaded,
@@ -37,10 +38,18 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> register(String email, String name, String password) async {
+  Future<void> register(
+    String userName,
+    String displayName,
+    String password,
+  ) async {
     try {
       emit(state.copyWith(status: StatusType.loading));
-      final AppUser user = await authService.register(email, name, password);
+      final AppUser user = await authService.register(
+        userName,
+        displayName,
+        password,
+      );
       emit(
         state.copyWith(
           status: StatusType.loaded,
@@ -51,5 +60,9 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(state.copyWith(status: StatusType.error, msg: e.toString()));
     }
+  }
+
+  void logout() {
+    LocalStorage.pref!.clear();
   }
 }

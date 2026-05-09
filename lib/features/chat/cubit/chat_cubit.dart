@@ -13,13 +13,13 @@ class ChatCubit extends Cubit<ChatState> {
 
   final ChatService chatService = ChatService();
 
-  Future<void> fetchChats(int currentUserId) async {
+  Future<void> fetchChats() async {
     emit(state.copyWith(status: StatusType.loading));
     try {
-      final data = await chatService.getChats(currentUserId);
+      final data = await chatService.getChats();
       final list = data.map((json) => Chat.fromJSON(json)).toList();
       emit(state.copyWith(status: StatusType.loaded, chats: list));
-    } on DioException catch (e) {
+    } catch (e) {
       emit(state.copyWith(status: StatusType.error, msg: e.toString()));
     }
   }

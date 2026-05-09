@@ -82,3 +82,5 @@ lib/
 ├── firebase_options.dart
 └── main.dart
 ```
+
+fvm flutter pub run build_runner build --delete-conflicting-outputs

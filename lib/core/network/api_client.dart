@@ -9,8 +9,8 @@ class ApiClient {
       Dio(
           BaseOptions(
             baseUrl: Api.baseURL,
-            connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 10),
+            connectTimeout: const Duration(seconds: 20),
+            receiveTimeout: const Duration(seconds: 20),
             contentType: "application/json",
           ),
         )
@@ -18,7 +18,7 @@ class ApiClient {
           InterceptorsWrapper(
             onRequest: (options, handler) {
               final token = LocalStorage.pref?.getString("token");
-              options.headers["Cookie"] = "token=$token";
+              options.headers["Authorization"] = "Bearer $token";
               handler.next(options);
             },
             onResponse: (response, handler) {
@@ -48,11 +48,19 @@ class ApiClient {
                   error = error.copyWith(message: "Mất kết nối mạng");
                   break;
                 case DioExceptionType.badResponse:
-                  if (error.response?.statusCode == 403) {
-                    error = error.copyWith(
-                      message:
-                          "Bạn chưa đăng nhập hoặc hết thời gian đăng nhập",
-                    );
+                  if (error.response?.statusCode == 403 ||
+                      error.response?.statusCode == 401) {
+                    String message =
+                        error.response?.data["message"].toString() ?? "";
+                    if (message == "Invalid account") {
+                      error = error.copyWith(
+                        message: "Sai tên đăng nhập hoặc mật khẩu",
+                      );
+                    } else {
+                      error = error.copyWith(
+                        message: "Bạn đã hết phiên đăng nhập",
+                      );
+                    }
                   } else {
                     error = error.copyWith(
                       message: error.response?.data["message"].toString(),
