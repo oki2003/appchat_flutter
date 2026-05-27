@@ -1,5 +1,7 @@
 import 'package:appchat_flutter/enums/status_type.dart';
 import 'package:appchat_flutter/features/movie/cubit/movie_cubit.dart';
+import 'package:appchat_flutter/features/movie_detail/cubit/movie_detail_cubit.dart';
+import 'package:appchat_flutter/features/movie_detail/movie_detail_screen.dart';
 import 'package:appchat_flutter/models/movie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +11,7 @@ class MovieScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final double screenHeight = MediaQuery.of(context).size.height;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: BlocBuilder<MovieCubit, MovieState>(
@@ -26,7 +28,7 @@ class MovieScreen extends StatelessWidget {
                 child: ListView.separated(
                   itemCount: state.movies.length,
                   itemBuilder: (context, index) =>
-                      _buildMovie(state.movies[index], screenHeight),
+                      _buildMovie(state.movies[index], screenHeight, context),
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 20),
                 ),
@@ -38,7 +40,7 @@ class MovieScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBanner(Movie movie, screenHeight) {
+  Widget _buildBanner(Movie movie, double screenHeight) {
     return Stack(
       children: [
         ClipRRect(
@@ -102,19 +104,18 @@ class MovieScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDot() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-      width: 3,
-      height: 3,
-    );
-  }
-
-  Widget _buildMovie(Movie movie, screenHeight) {
+  Widget _buildMovie(Movie movie, double screenHeight, BuildContext context) {
     final heightItem = screenHeight / 7;
     return InkWell(
-      onTap: () => {},
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => MovieDetailCubit()..fetchComments(movie.id),
+            child: MovieDetailScreen(movie: movie),
+          ),
+        ),
+      ),
       child: Row(
         children: [
           ClipRRect(

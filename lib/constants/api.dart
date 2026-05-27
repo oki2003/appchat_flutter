@@ -1,6 +1,6 @@
 class Api {
-  static const String baseURL = "http://192.168.1.97:3000";
-  static const String baseSocketURL = "http://192.168.1.97:3000";
+  static const String baseURL = "http://10.86.6.55:3000";
+  static const String baseSocketURL = "http://10.86.6.55:3000";
 
   // account
   static const String login = "/auth/login";
@@ -12,6 +12,9 @@ class Api {
 
   // movie
   static const String movies = "/movie";
+
+  // comment
+  static String comments(int idMovie) => "/comment/$idMovie";
 
   // messages
   static String messages(int idChat) => "/message/$idChat";

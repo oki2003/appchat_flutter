@@ -11,4 +11,13 @@ class MovieService {
       throw e.message ?? "Lấy danh sách phim thất bại";
     }
   }
+
+  Future<List> getComments(int idMovie) async {
+    try {
+      final response = await ApiClient.dio.get(Api.comments(idMovie));
+      return response.data["data"];
+    } on DioException catch (e) {
+      throw e.message ?? "Lấy danh sách phim thất bại";
+    }
+  }
 }
