@@ -158,14 +158,9 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
                           onPressed: () {
                             _isShowOption.value = !_isShowOption.value;
                           },
-                          icon: ShaderMask(
-                            shaderCallback: (bounds) => LinearGradient(
-                              colors: [Colors.purpleAccent, Colors.lightBlue],
-                            ).createShader(bounds),
-                            child: const Icon(
-                              Icons.grid_view_rounded,
-                              color: Colors.white,
-                            ),
+                          icon: const Icon(
+                            Icons.grid_view_rounded,
+                            color: Color(0xFF7C3AED),
                           ),
                         ),
                         builder: (context, value, child) =>
@@ -216,21 +211,18 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
                         builder: (context, value, child) => IconButton(
                           onPressed: () {
                             if (value.text.isEmpty) return;
+
                             context.read<ChatDetailCubit>().sendMessage(
                               _textEditingController.text,
                               friend,
                               context.read<AuthCubit>().state.appUser,
                             );
-                            _textEditingController.text = "";
+
+                            _textEditingController.clear();
                           },
-                          icon: ShaderMask(
-                            shaderCallback: (bounds) => LinearGradient(
-                              colors: [Colors.purpleAccent, Colors.lightBlue],
-                            ).createShader(bounds),
-                            child: Icon(
-                              value.text.isEmpty ? Icons.thumb_up : Icons.send,
-                              color: Colors.white,
-                            ),
+                          icon: Icon(
+                            value.text.isEmpty ? Icons.thumb_up : Icons.send,
+                            color: const Color(0xFF7C3AED),
                           ),
                         ),
                       ),
@@ -295,11 +287,7 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
       alignment: Alignment.centerRight,
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.purple, Colors.blue],
-          ),
+          color: Color(0xFF7C3AED),
           borderRadius: BorderRadius.circular(15),
         ),
         padding: EdgeInsets.all(10),
@@ -382,187 +370,3 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
     );
   }
 }
-
-// class ChatDetailScreen1 extends StatefulWidget {
-//   const ChatDetailScreen1({super.key});
-
-//   @override
-//   State<StatefulWidget> createState() {
-//     return _ChatDetailScreen1();
-//   }
-// }
-
-// class _ChatDetailScreen1 extends State<ChatDetailScreen1> {
-//   final messageController = TextEditingController();
-//   final ValueNotifier<bool> hasText = ValueNotifier(false);
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       final Chat chat = ModalRoute.of(context)!.settings.arguments as Chat;
-//       context.read<ChatDetailCubit>().fetchMessages(chat.idChat);
-//     });
-//   }
-
-//   @override
-//   void dispose() {
-//     messageController.dispose();
-//     super.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final Chat chat = ModalRoute.of(context)!.settings.arguments as Chat;
-//     final AppUser friend = chat.friend;
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Row(
-//           children: [
-//             UserPresence(
-//               avatarURL: friend.avatarUrl.toString(),
-//               size: 40,
-//               status: chat.status,
-//             ),
-//             SizedBox(width: 20),
-//             Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Text(
-//                   friend.displayName,
-//                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-//                 ),
-//                 chat.status
-//                     ? const Text(
-//                         "Đang hoạt động",
-//                         style: TextStyle(fontSize: 11, color: Colors.grey),
-//                       )
-//                     : const SizedBox.shrink(),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//       body: Column(
-//         children: [
-//           Expanded(
-//             child: BlocBuilder<ChatDetailCubit, ChatDetailState>(
-//               builder: (context, state) {
-//                 if (state.status == StatusType.loading ||
-//                     state.status == StatusType.init) {
-//                   return const Center(child: CircularProgressIndicator());
-//                 } else {
-//                   if (state.messages.isEmpty) {
-//                     return const Text("Chưa có hội thoại nào cả");
-//                   } else {
-//                     final List<Message> messages = state.messages;
-//                     return Padding(
-//                       padding: const EdgeInsetsGeometry.only(
-//                         left: 10,
-//                         right: 10,
-//                       ),
-//                       child: ListView.builder(
-//                         itemCount: messages.length,
-//                         itemBuilder: (context, index) => Align(
-//                           alignment: messages[index].senderId == friend.id
-//                               ? Alignment.centerLeft
-//                               : Alignment.centerRight,
-//                           child: _buildMessage(
-//                             messages[index].,
-//                             messages[index].content,
-//                             messages[index].idUserSend != friend.id,
-//                           ),
-//                         ),
-//                       ),
-//                     );
-//                   }
-//                 }
-//               },
-//             ),
-//           ),
-//           Container(
-//             decoration: BoxDecoration(
-//               border: Border(
-//                 top: BorderSide(
-//                   color: Colors.grey,
-//                   width: 1,
-//                   style: BorderStyle.solid,
-//                 ),
-//               ),
-//             ),
-//             padding: EdgeInsets.all(17),
-//             height: 100,
-//             child: Row(
-//               children: [
-//                 Expanded(
-//                   child: TextFormField(
-//                     controller: messageController,
-//                     onChanged: (value) {
-//                       hasText.value = value.isNotEmpty;
-//                     },
-//                     decoration: InputDecoration(hintText: 'Nhắn tin'),
-//                   ),
-//                 ),
-//                 const SizedBox(width: 10),
-//                 ValueListenableBuilder<bool>(
-//                   valueListenable: hasText,
-//                   builder: (context, value, child) {
-//                     if (value == true) {
-//                       return ElevatedButton(
-//                         style: ElevatedButton.styleFrom(
-//                           shape: CircleBorder(),
-//                           padding: EdgeInsets.all(4),
-//                         ),
-//                         onPressed: () {
-//                           hasText.value = false;
-//                           messageController.clear();
-//                         },
-//                         child: const Icon(Icons.send_sharp),
-//                       );
-//                     } else {
-//                       return IconButton(
-//                         onPressed: () {},
-//                         icon: const Icon(
-//                           Icons.thumb_up,
-//                           color: Color(0xFF7851DE),
-//                         ),
-//                       );
-//                     }
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// Widget _buildMessage(int type, String content, bool isMyMessage) {
-//   return Container(
-//     margin: EdgeInsets.only(bottom: 20),
-//     padding: EdgeInsets.all(10),
-//     decoration: BoxDecoration(
-//       color: isMyMessage ? Color(0xFF7851DE) : Color(0xFFF4F4F5),
-//       borderRadius: BorderRadius.circular(10),
-//     ),
-//     child: Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         if (type == 1)
-//           Text(
-//             content,
-//             style: TextStyle(color: isMyMessage ? Colors.white : Colors.black),
-//           ),
-//         if (type == 2) Icon(Icons.file_copy_rounded),
-//         if (type == 3) Icon(Icons.description),
-//         if (type == 4) Icon(Icons.slideshow),
-//         if (type == 5) Icon(Icons.file_copy_rounded),
-//         if (type == 6) Icon(Icons.picture_as_pdf),
-//         if (type == 7)
-//           Image.network("${Api.baseURL}/storage/${content.split("-")[1]}"),
-//       ],
-//     ),
-//   );
-// }

@@ -50,7 +50,7 @@ class _AppState extends State<App> {
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.all(8),
                   foregroundColor: _appViewModel.currentIndex.value == index
-                      ? Color(0xFF7851DE)
+                      ? Color(0xFF7C3AED)
                       : Colors.grey,
                 ),
                 child: Column(

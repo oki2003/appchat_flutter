@@ -121,7 +121,6 @@ class MovieDetailScreen extends StatelessWidget {
                             ),
                             decoration: const BoxDecoration(
                               color: Color(0xfff1f5f9),
-                              // color: Colors.blue,
                               borderRadius: BorderRadiusGeometry.all(
                                 Radius.circular(50),
                               ),
@@ -171,9 +170,11 @@ class MovieDetailScreen extends StatelessWidget {
                               ),
                             );
                           },
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.black,
+                          style: ElevatedButton.styleFrom(
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.all(
+                                Radius.circular(10),
+                              ),
                             ),
                           ),
                           child: Text(
@@ -197,9 +198,11 @@ class MovieDetailScreen extends StatelessWidget {
                               ),
                             );
                           },
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.black,
+                          style: ElevatedButton.styleFrom(
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.all(
+                                Radius.circular(10),
+                              ),
                             ),
                           ),
                           child: Text(
@@ -338,15 +341,11 @@ class MovieDetailScreen extends StatelessWidget {
         }
         return SizedBox(
           height: screenHeight / 4,
-          child: SingleChildScrollView(
+          child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                ...state.actors.map(
-                  (actor) => _buildActorItem(actor, screenHeight),
-                ),
-              ],
-            ),
+            itemCount: state.actors.length,
+            itemBuilder: (context, index) =>
+                _buildActorItem(state.actors[index], screenHeight),
           ),
         );
       },

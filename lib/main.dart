@@ -46,18 +46,18 @@ class _MyAppState extends State<MyApp> {
             colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFEFECF8)),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7851DE),
+                backgroundColor: const Color(0xFF7C3AED),
                 foregroundColor: Colors.white,
               ),
             ),
             textTheme: ThemeData.light().textTheme.copyWith(
               titleLarge: const TextStyle(
-                color: Color(0xFF7851DE),
+                color: Color(0xFF7C3AED),
                 fontWeight: FontWeight.bold,
                 fontSize: 33,
               ),
               titleMedium: const TextStyle(
-                color: Color(0xFF7851DE),
+                color: Color(0xFF7C3AED),
                 fontWeight: FontWeight.bold,
                 fontSize: 23,
               ),

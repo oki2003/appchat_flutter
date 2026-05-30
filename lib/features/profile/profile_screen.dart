@@ -61,11 +61,7 @@ class ProfileScreen extends StatelessWidget {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.purple, Colors.blue],
-          ),
+          color: Color(0xFF7C3AED),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
