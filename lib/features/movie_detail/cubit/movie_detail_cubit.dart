@@ -1,4 +1,5 @@
 import 'package:appchat_flutter/enums/status_type.dart';
+import 'package:appchat_flutter/models/actor.dart';
 import 'package:appchat_flutter/models/comment.dart';
 import 'package:appchat_flutter/models/movie.dart';
 import 'package:appchat_flutter/services/movie_service.dart';
@@ -21,6 +22,19 @@ class MovieDetailCubit extends Cubit<MovieDetailState> {
           .map((comment) => Comment.fromJson(comment))
           .toList();
       emit(state.copyWith(status: StatusType.loaded, comments: list));
+    } catch (e) {
+      emit(state.copyWith(status: StatusType.error, msg: e.toString()));
+    }
+  }
+
+  Future<void> fetchActors(int idMovie) async {
+    emit(state.copyWith(status: StatusType.loading));
+    try {
+      final data = await movieService.getActors(idMovie);
+      final List<Actor> list = data
+          .map((actor) => Actor.fromJson(actor))
+          .toList();
+      emit(state.copyWith(status: StatusType.loaded, actors: list));
     } catch (e) {
       emit(state.copyWith(status: StatusType.error, msg: e.toString()));
     }

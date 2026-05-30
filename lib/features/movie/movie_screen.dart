@@ -111,7 +111,9 @@ class MovieScreen extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (context) => BlocProvider(
-            create: (context) => MovieDetailCubit()..fetchComments(movie.id),
+            create: (context) => MovieDetailCubit()
+              ..fetchComments(movie.id)
+              ..fetchActors(movie.id),
             child: MovieDetailScreen(movie: movie),
           ),
         ),

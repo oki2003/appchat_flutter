@@ -1,6 +1,6 @@
 import 'package:appchat_flutter/enums/status_type.dart';
 import 'package:appchat_flutter/models/app_user.dart';
-import 'package:appchat_flutter/services/auth.service.dart';
+import 'package:appchat_flutter/services/auth_service.dart';
 import 'package:appchat_flutter/services/local_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

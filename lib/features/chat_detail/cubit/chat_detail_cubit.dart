@@ -8,8 +8,8 @@ import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/models/message.dart';
 import 'package:appchat_flutter/models/response/send_message_response.dart';
 import 'package:appchat_flutter/models/response/typing_response.dart';
-import 'package:appchat_flutter/services/chat.service.dart';
-import 'package:appchat_flutter/services/socket.service.dart';
+import 'package:appchat_flutter/services/chat_service.dart';
+import 'package:appchat_flutter/services/socket_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -84,7 +84,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
   void sendMessage(String content, AppUser friend, AppUser? currentUser) {
     try {
       if (currentUser == null) {
-        //
+        // handle later
       } else {
         final Message msg = Message(
           chatId: chatId,
@@ -99,7 +99,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
         SocketService().sendToServer(SocketTitle.sendMessage, requestData);
       }
     } catch (_) {
-      //
+      //handle later
     }
   }
 

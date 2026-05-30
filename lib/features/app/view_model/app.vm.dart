@@ -8,7 +8,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppViewModel {
   Map<String, dynamic> categories = {
-    'icons': [Icons.chat_outlined, Icons.movie_outlined, Icons.person_outlined],
+    'icons': [
+      Icons.chat_bubble_outline,
+      Icons.explore_outlined,
+      Icons.account_circle,
+    ],
     'widget': [
       BlocProvider(
         create: (context) => ChatCubit()..fetchChats(),
@@ -20,7 +24,7 @@ class AppViewModel {
       ),
       ProfileScreen(),
     ],
-    'label': ["Trò chuyện", "Giải trí", "Tôi"],
+    'label': ["Trò chuyện", "Khám phá", "Tôi"],
   };
   ValueNotifier<int> currentIndex = ValueNotifier<int>(0);
 

@@ -1,9 +1,11 @@
 import 'package:appchat_flutter/enums/status_type.dart';
 import 'package:appchat_flutter/features/movie_detail/cubit/movie_detail_cubit.dart';
+import 'package:appchat_flutter/models/actor.dart';
 import 'package:appchat_flutter/models/author_detail.dart';
 import 'package:appchat_flutter/models/comment.dart';
 import 'package:appchat_flutter/models/movie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -154,24 +156,59 @@ class MovieDetailScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.justify,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (_) => BlocProvider.value(
-                          value: context.read<MovieDetailCubit>(),
-                          child: _buildCommentList(screenHeight),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<MovieDetailCubit>(),
+                                child: _buildCommentList(screenHeight),
+                              ),
+                            );
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.black,
+                            ),
+                          ),
+                          child: Text(
+                            "Xem bình luận",
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
                         ),
-                      );
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.black),
-                    ),
-                    child: Text(
-                      "Xem bình luận",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<MovieDetailCubit>(),
+                                child: _buildActorList(screenHeight),
+                              ),
+                            );
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                              Colors.black,
+                            ),
+                          ),
+                          child: Text(
+                            "Xem diễn viên",
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -285,6 +322,60 @@ class MovieDetailScreen extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActorList(double screenHeight) {
+    return BlocBuilder<MovieDetailCubit, MovieDetailState>(
+      builder: (context, state) {
+        if (state.status == StatusType.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state.status == StatusType.error) {
+          return Center(child: Text("${state.msg}"));
+        }
+        return SizedBox(
+          height: screenHeight / 4,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                ...state.actors.map(
+                  (actor) => _buildActorItem(actor, screenHeight),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildActorItem(Actor actor, double screenHeight) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Avatar
+          CircleAvatar(
+            radius: screenHeight / 20,
+            backgroundColor: Colors.grey.shade300,
+            backgroundImage: actor.profilePath != null
+                ? NetworkImage(actor.profilePath!)
+                : null,
+            child: actor.profilePath == null
+                ? Text(
+                    actor.name.isNotEmpty ? actor.name[0].toUpperCase() : "?",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  )
+                : null,
+          ),
+          const SizedBox(width: 12),
+          Text(actor.name),
         ],
       ),
     );

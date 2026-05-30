@@ -64,10 +64,10 @@ class _MyAppState extends State<MyApp> {
             ),
             inputDecorationTheme: InputDecorationThemeData(
               contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-              hintStyle: TextStyle(color: Color(0xFF71717A)),
+              hintStyle: TextStyle(color: Color(0xFF828485)),
               filled: true,
-              hoverColor: Color(0xFFF9F9FA),
-              fillColor: Color(0xFFF9F9FA),
+              hoverColor: Color(0xFFE7E8EB),
+              fillColor: Color(0xFFE7E8EB),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: Color(0xFFE4E4E7)),

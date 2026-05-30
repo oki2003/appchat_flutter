@@ -4,7 +4,7 @@ import 'package:appchat_flutter/constants/api.dart';
 import 'package:appchat_flutter/core/network/api_client.dart';
 import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/services/local_storage.dart';
-import 'package:appchat_flutter/services/socket.service.dart';
+import 'package:appchat_flutter/services/socket_service.dart';
 import 'package:dio/dio.dart';
 
 class AuthService {

@@ -17,7 +17,16 @@ class MovieService {
       final response = await ApiClient.dio.get(Api.comments(idMovie));
       return response.data["data"];
     } on DioException catch (e) {
-      throw e.message ?? "Lấy danh sách phim thất bại";
+      throw e.message ?? "Lấy danh sách bình luận thất bại";
+    }
+  }
+
+  Future<List> getActors(int idMovie) async {
+    try {
+      final response = await ApiClient.dio.get(Api.actors(idMovie));
+      return response.data["data"];
+    } on DioException catch (e) {
+      throw e.message ?? "Lấy danh sách diễn viên thất bại";
     }
   }
 }

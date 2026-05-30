@@ -267,9 +267,6 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
               context,
             ).textTheme.titleMedium?.copyWith(color: Colors.black),
           ),
-          const Expanded(child: SizedBox.shrink()),
-          IconButton(onPressed: () {}, icon: Icon(Icons.call_outlined)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.videocam_outlined)),
         ],
       ),
     );
@@ -320,7 +317,7 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
     return ValueListenableBuilder(
       valueListenable: _isShowOption,
       child: SizedBox(
-        width: screenWidth / 2,
+        width: screenWidth / 1.7,
         child: Material(
           color: Colors.white,
           shape: RoundedRectangleBorder(
@@ -333,25 +330,13 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
           ),
           child: Column(
             children: [
-              _buildOptionItem("Gửi ảnh", Icons.image_rounded, () {
-                _isShowOption.value = false;
-              }, isFirst: true),
-              Container(
-                width: double.infinity,
-                color: Colors.black.withValues(alpha: 0.5),
-                height: 0.5,
+              _buildOptionItem(
+                "Chia sẻ phim từ bộ sưu tập",
+                Icons.video_collection_rounded,
+                () {
+                  _isShowOption.value = false;
+                },
               ),
-              _buildOptionItem("Gửi video", Icons.video_collection_rounded, () {
-                _isShowOption.value = false;
-              }),
-              Container(
-                width: double.infinity,
-                color: Colors.black.withValues(alpha: 0.5),
-                height: 0.5,
-              ),
-              _buildOptionItem("Định vị", Icons.location_on_rounded, () {
-                _isShowOption.value = false;
-              }, isLast: true),
             ],
           ),
         ),

@@ -20,6 +20,7 @@ mixin _$MovieDetailState {
   StatusType get status => throw _privateConstructorUsedError;
   String? get msg => throw _privateConstructorUsedError;
   List<Comment> get comments => throw _privateConstructorUsedError;
+  List<Actor> get actors => throw _privateConstructorUsedError;
 
   /// Create a copy of MovieDetailState
   /// with the given fields replaced by the non-null parameter values.
@@ -35,7 +36,12 @@ abstract class $MovieDetailStateCopyWith<$Res> {
     $Res Function(MovieDetailState) then,
   ) = _$MovieDetailStateCopyWithImpl<$Res, MovieDetailState>;
   @useResult
-  $Res call({StatusType status, String? msg, List<Comment> comments});
+  $Res call({
+    StatusType status,
+    String? msg,
+    List<Comment> comments,
+    List<Actor> actors,
+  });
 }
 
 /// @nodoc
@@ -56,6 +62,7 @@ class _$MovieDetailStateCopyWithImpl<$Res, $Val extends MovieDetailState>
     Object? status = null,
     Object? msg = freezed,
     Object? comments = null,
+    Object? actors = null,
   }) {
     return _then(
       _value.copyWith(
@@ -71,6 +78,10 @@ class _$MovieDetailStateCopyWithImpl<$Res, $Val extends MovieDetailState>
                 ? _value.comments
                 : comments // ignore: cast_nullable_to_non_nullable
                       as List<Comment>,
+            actors: null == actors
+                ? _value.actors
+                : actors // ignore: cast_nullable_to_non_nullable
+                      as List<Actor>,
           )
           as $Val,
     );
@@ -86,7 +97,12 @@ abstract class _$$MovieDetailStateImplCopyWith<$Res>
   ) = __$$MovieDetailStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({StatusType status, String? msg, List<Comment> comments});
+  $Res call({
+    StatusType status,
+    String? msg,
+    List<Comment> comments,
+    List<Actor> actors,
+  });
 }
 
 /// @nodoc
@@ -106,6 +122,7 @@ class __$$MovieDetailStateImplCopyWithImpl<$Res>
     Object? status = null,
     Object? msg = freezed,
     Object? comments = null,
+    Object? actors = null,
   }) {
     return _then(
       _$MovieDetailStateImpl(
@@ -121,6 +138,10 @@ class __$$MovieDetailStateImplCopyWithImpl<$Res>
             ? _value._comments
             : comments // ignore: cast_nullable_to_non_nullable
                   as List<Comment>,
+        actors: null == actors
+            ? _value._actors
+            : actors // ignore: cast_nullable_to_non_nullable
+                  as List<Actor>,
       ),
     );
   }
@@ -133,7 +154,9 @@ class _$MovieDetailStateImpl implements _MovieDetailState {
     this.status = StatusType.init,
     this.msg,
     final List<Comment> comments = const [],
-  }) : _comments = comments;
+    final List<Actor> actors = const [],
+  }) : _comments = comments,
+       _actors = actors;
 
   @override
   @JsonKey()
@@ -149,9 +172,18 @@ class _$MovieDetailStateImpl implements _MovieDetailState {
     return EqualUnmodifiableListView(_comments);
   }
 
+  final List<Actor> _actors;
+  @override
+  @JsonKey()
+  List<Actor> get actors {
+    if (_actors is EqualUnmodifiableListView) return _actors;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_actors);
+  }
+
   @override
   String toString() {
-    return 'MovieDetailState(status: $status, msg: $msg, comments: $comments)';
+    return 'MovieDetailState(status: $status, msg: $msg, comments: $comments, actors: $actors)';
   }
 
   @override
@@ -161,7 +193,8 @@ class _$MovieDetailStateImpl implements _MovieDetailState {
             other is _$MovieDetailStateImpl &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.msg, msg) || other.msg == msg) &&
-            const DeepCollectionEquality().equals(other._comments, _comments));
+            const DeepCollectionEquality().equals(other._comments, _comments) &&
+            const DeepCollectionEquality().equals(other._actors, _actors));
   }
 
   @override
@@ -170,6 +203,7 @@ class _$MovieDetailStateImpl implements _MovieDetailState {
     status,
     msg,
     const DeepCollectionEquality().hash(_comments),
+    const DeepCollectionEquality().hash(_actors),
   );
 
   /// Create a copy of MovieDetailState
@@ -189,6 +223,7 @@ abstract class _MovieDetailState implements MovieDetailState {
     final StatusType status,
     final String? msg,
     final List<Comment> comments,
+    final List<Actor> actors,
   }) = _$MovieDetailStateImpl;
 
   @override
@@ -197,6 +232,8 @@ abstract class _MovieDetailState implements MovieDetailState {
   String? get msg;
   @override
   List<Comment> get comments;
+  @override
+  List<Actor> get actors;
 
   /// Create a copy of MovieDetailState
   /// with the given fields replaced by the non-null parameter values.
