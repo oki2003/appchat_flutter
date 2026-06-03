@@ -158,62 +158,53 @@ class MovieDetailScreen extends StatelessWidget {
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              builder: (_) => BlocProvider.value(
-                                value: context.read<MovieDetailCubit>(),
-                                child: _buildCommentList(screenHeight),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadiusGeometry.all(
-                                Radius.circular(10),
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            "Xem bình luận",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
+                  ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<MovieDetailCubit>(),
+                          child: _buildCommentList(screenHeight),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 40),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.all(
+                          Radius.circular(10),
                         ),
                       ),
-                    ],
+                    ),
+                    child: Text(
+                      "Xem bình luận",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (_) => BlocProvider.value(
-                                value: context.read<MovieDetailCubit>(),
-                                child: _buildActorList(screenHeight),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadiusGeometry.all(
-                                Radius.circular(10),
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            "Xem diễn viên",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<MovieDetailCubit>(),
+                          child: _buildActorList(screenHeight),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 40),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.all(
+                          Radius.circular(10),
                         ),
                       ),
-                    ],
+                    ),
+                    child: Text(
+                      "Xem diễn viên",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                   ),
                 ],
               ),
