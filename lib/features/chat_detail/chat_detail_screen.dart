@@ -268,15 +268,15 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color(0xFFe9eaec),
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
         child: Text(
           message.content,
-          style: TextStyle(color: Colors.black, fontSize: 20),
+          style: const TextStyle(color: Colors.black, fontSize: 20),
         ),
       ),
     );
@@ -285,17 +285,30 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
   Widget _buildMyMessage(Message message) {
     return Align(
       alignment: Alignment.centerRight,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFF7C3AED),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-        child: Text(
-          message.content,
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF7C3AED),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+            ),
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+            child: Text(
+              message.content,
+              style: const TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+          if (message.status == MessageStatus.sending)
+            const Padding(
+              padding: EdgeInsetsGeometry.only(right: 10),
+              child: Text(
+                "Đang gửi",
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -323,6 +336,10 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
                 Icons.video_collection_rounded,
                 () {
                   _isShowOption.value = false;
+                  ToastOverlay.showToastBottom(
+                    "Chức năng này sẽ ra mắt lần tới",
+                    true,
+                  );
                 },
               ),
             ],

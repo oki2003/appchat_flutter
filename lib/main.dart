@@ -61,6 +61,11 @@ class _MyAppState extends State<MyApp> {
                 fontWeight: FontWeight.bold,
                 fontSize: 23,
               ),
+              titleSmall: const TextStyle(
+                color: Color(0xFF7C3AED),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
             inputDecorationTheme: InputDecorationThemeData(
               contentPadding: const EdgeInsets.symmetric(horizontal: 20),

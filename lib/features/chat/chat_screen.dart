@@ -7,6 +7,7 @@ import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/models/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
@@ -20,17 +21,23 @@ class ChatScreen extends StatelessWidget {
           TextField(decoration: InputDecoration(hintText: "Tìm kiếm")),
           const SizedBox(height: 15),
           Expanded(
-            child: BlocConsumer<ChatCubit, ChatState>(
-              listener: (context, state) {
-                if (state.status == StatusType.error && state.msg != null) {
-                  ToastOverlay.showToastBottom(state.msg!, false);
+            child: BlocBuilder<ChatCubit, ChatState>(
+              builder: (context, state) {
+                switch (state.status) {
+                  case StatusType.loading:
+                    return _buildSkeleton();
+                  case StatusType.error:
+                    return _buildError(state.msg ?? "", context);
+                  case StatusType.loaded:
+                    return ListView.builder(
+                      itemCount: state.chats.length,
+                      itemBuilder: (context, index) =>
+                          _buildChatItem(state.chats[index], context),
+                    );
+                  default:
+                    return _buildError(state.msg ?? "", context);
                 }
               },
-              builder: (context, state) => ListView.builder(
-                itemCount: state.chats.length,
-                itemBuilder: (context, index) =>
-                    _buildChat(state.chats[index], context),
-              ),
             ),
           ),
         ],
@@ -38,7 +45,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildChat(Chat chat, BuildContext context) {
+  Widget _buildChatItem(Chat chat, BuildContext context) {
     final AppUser friend = chat.friend;
     final bool hasCustomAvatar =
         friend.avatarUrl != null &&
@@ -165,6 +172,38 @@ class ChatScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return ListView.builder(
+      itemCount: 8,
+      itemBuilder: (context, index) => Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          height: 68,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(String messageError, BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(messageError),
+        GestureDetector(
+          onTap: () => context.read<ChatCubit>().fetchChats(),
+          child: Text('Thử lại', style: Theme.of(context).textTheme.titleSmall),
+        ),
+      ],
     );
   }
 }

@@ -81,7 +81,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
     emit(state.copyWith(status: StatusType.loaded, messages: list));
   }
 
-  void sendMessage(String content, AppUser friend, AppUser? currentUser) {
+  void sendMessage(String content, AppUser friend, AppUser? currentUser) async {
     try {
       if (currentUser == null) {
         // handle later
@@ -96,6 +96,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
         final requestData = {"receiverId": friend.id, ...msg.toJson()};
         final List<Message> listMsg = [msg, ...state.messages];
         emit(state.copyWith(messages: listMsg));
+        await Future.delayed(const Duration(seconds: 3));
         SocketService().sendToServer(SocketTitle.sendMessage, requestData);
       }
     } catch (_) {

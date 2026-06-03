@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MovieDetailScreen extends StatelessWidget {
   const MovieDetailScreen({super.key, required this.movie});
@@ -235,7 +236,7 @@ class MovieDetailScreen extends StatelessWidget {
     return BlocBuilder<MovieDetailCubit, MovieDetailState>(
       builder: (context, state) {
         if (state.status == StatusType.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return _buildSkeletonComments();
         }
         if (state.status == StatusType.error) {
           return const Center(child: Text("loi"));
@@ -275,7 +276,6 @@ class MovieDetailScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Avatar
           CircleAvatar(
             radius: 20,
             backgroundColor: Colors.grey.shade300,
@@ -292,12 +292,10 @@ class MovieDetailScreen extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          // Nội dung
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Tên + username
                 Row(
                   children: [
                     Flexible(
@@ -317,10 +315,7 @@ class MovieDetailScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 4),
-
-                // Nội dung comment
                 Text(comment.content, style: const TextStyle(height: 1.4)),
               ],
             ),
@@ -334,7 +329,7 @@ class MovieDetailScreen extends StatelessWidget {
     return BlocBuilder<MovieDetailCubit, MovieDetailState>(
       builder: (context, state) {
         if (state.status == StatusType.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return _buildSkeletonActors(screenHeight);
         }
         if (state.status == StatusType.error) {
           return Center(child: Text("${state.msg}"));
@@ -359,7 +354,6 @@ class MovieDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Avatar
           CircleAvatar(
             radius: screenHeight / 20,
             backgroundColor: Colors.grey.shade300,
@@ -376,6 +370,99 @@ class MovieDetailScreen extends StatelessWidget {
           const SizedBox(width: 12),
           Text(actor.name),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSkeletonComments() {
+    return ListView.builder(
+      itemCount: 5,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(height: 14, width: 80, color: Colors.white),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 100,
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSkeletonActors(double screenHeight) {
+    return SizedBox(
+      height: screenHeight / 4,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildSkeletonActorItem(screenHeight),
+          _buildSkeletonActorItem(screenHeight),
+          _buildSkeletonActorItem(screenHeight),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSkeletonActorItem(double screenHeight) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: screenHeight / 10,
+              height: screenHeight / 10,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              height: 12,
+              width: 60,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
