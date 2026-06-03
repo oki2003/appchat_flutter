@@ -5,6 +5,7 @@ import 'package:appchat_flutter/features/chat_detail/cubit/chat_detail_cubit.dar
 import 'package:appchat_flutter/features/chat_detail/chat_detail_screen.dart';
 import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/models/chat.dart';
+import 'package:appchat_flutter/widgets/error_widget_custom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
@@ -27,7 +28,10 @@ class ChatScreen extends StatelessWidget {
                   case StatusType.loading:
                     return _buildSkeleton();
                   case StatusType.error:
-                    return _buildError(state.msg ?? "", context);
+                    return ErrorWidgetCustom(
+                      message: state.msg ?? "",
+                      onRefresh: () => context.read<ChatCubit>().fetchChats(),
+                    );
                   case StatusType.loaded:
                     return ListView.builder(
                       itemCount: state.chats.length,
@@ -35,7 +39,10 @@ class ChatScreen extends StatelessWidget {
                           _buildChatItem(state.chats[index], context),
                     );
                   default:
-                    return _buildError(state.msg ?? "", context);
+                    return ErrorWidgetCustom(
+                      message: state.msg ?? "",
+                      onRefresh: () => context.read<ChatCubit>().fetchChats(),
+                    );
                 }
               },
             ),
@@ -191,19 +198,6 @@ class ChatScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildError(String messageError, BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(messageError),
-        GestureDetector(
-          onTap: () => context.read<ChatCubit>().fetchChats(),
-          child: Text('Thử lại', style: Theme.of(context).textTheme.titleSmall),
-        ),
-      ],
     );
   }
 }

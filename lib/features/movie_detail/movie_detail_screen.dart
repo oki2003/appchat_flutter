@@ -4,6 +4,7 @@ import 'package:appchat_flutter/models/actor.dart';
 import 'package:appchat_flutter/models/author_detail.dart';
 import 'package:appchat_flutter/models/comment.dart';
 import 'package:appchat_flutter/models/movie.dart';
+import 'package:appchat_flutter/widgets/error_widget_custom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -239,7 +240,11 @@ class MovieDetailScreen extends StatelessWidget {
           return _buildSkeletonComments();
         }
         if (state.status == StatusType.error) {
-          return const Center(child: Text("loi"));
+          return ErrorWidgetCustom(
+            message: state.msg ?? "",
+            onRefresh: () =>
+                context.read<MovieDetailCubit>().fetchComments(movie.id),
+          );
         }
         return DraggableScrollableSheet(
           initialChildSize: 1.0,
@@ -332,7 +337,11 @@ class MovieDetailScreen extends StatelessWidget {
           return _buildSkeletonActors(screenHeight);
         }
         if (state.status == StatusType.error) {
-          return Center(child: Text("${state.msg}"));
+          return ErrorWidgetCustom(
+            message: state.msg ?? "",
+            onRefresh: () =>
+                context.read<MovieDetailCubit>().fetchActors(movie.id),
+          );
         }
         return SizedBox(
           height: screenHeight / 4,
