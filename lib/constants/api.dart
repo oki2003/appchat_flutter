@@ -1,6 +1,6 @@
 class Api {
-  static const String baseURL = "http://192.168.1.3:3000";
-  static const String baseSocketURL = "http://192.168.1.3:3000";
+  static const String baseURL = "http://192.168.1.10:3000";
+  static const String baseSocketURL = "http://192.168.1.10:3000";
 
   // account
   static const String login = "/auth/login";
@@ -26,4 +26,8 @@ class Api {
 
   // actor
   static String actors(int idMovie) => "/actor/$idMovie";
+
+  // FCM token
+  static String upsertFCMToken(String fcmToken) => "/firebase/$fcmToken";
+  static String deleteFCMToken(String fcmToken) => "/firebase/$fcmToken";
 }

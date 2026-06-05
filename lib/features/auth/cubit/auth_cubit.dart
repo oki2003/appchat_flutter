@@ -1,6 +1,7 @@
 import 'package:appchat_flutter/enums/status_type.dart';
 import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/services/auth_service.dart';
+import 'package:appchat_flutter/services/firebase_service.dart';
 import 'package:appchat_flutter/services/local_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -62,7 +63,12 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  void logout() {
+  void logout() async {
+    final fcmToken = LocalStorage.pref!.getString("fcmToken") ?? "";
+    if (fcmToken.isNotEmpty) {
+      FirebaseService firebaseService = FirebaseService();
+      await firebaseService.deleteFCMToken(fcmToken);
+    }
     LocalStorage.pref!.clear();
   }
 }
