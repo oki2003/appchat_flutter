@@ -6,6 +6,7 @@ import 'package:appchat_flutter/features/auth/register_screen.dart';
 import 'package:appchat_flutter/features/auth/splash_screen.dart';
 import 'package:appchat_flutter/services/local_storage.dart';
 import 'package:appchat_flutter/core/overlay/toast_overlay.dart';
+import 'package:appchat_flutter/theme/brand_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  bool isDarkMode = false;
 
   @override
   void initState() {
@@ -37,8 +39,15 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  void onChangedMode() {
+    setState(() {
+      isDarkMode = !isDarkMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
     return BlocProvider(
       create: (context) => AuthCubit()..auth(),
       child: SafeArea(
@@ -46,51 +55,51 @@ class _MyAppState extends State<MyApp> {
           navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFEFECF8)),
+            brightness: isDarkMode ? Brightness.dark : Brightness.light,
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7C3AED),
-                foregroundColor: Colors.white,
+                backgroundColor: brandAppTheme.primaryBrandColor,
+                foregroundColor: brandAppTheme.textColor,
               ),
             ),
-            textTheme: ThemeData.light().textTheme.copyWith(
-              titleLarge: const TextStyle(
-                color: Color(0xFF7C3AED),
+            textTheme: ThemeData().textTheme.copyWith(
+              titleLarge: TextStyle(
+                color: brandAppTheme.primaryBrandColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 33,
               ),
-              titleMedium: const TextStyle(
-                color: Color(0xFF7C3AED),
+              titleMedium: TextStyle(
+                color: brandAppTheme.primaryBrandColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 23,
               ),
-              titleSmall: const TextStyle(
-                color: Color(0xFF7C3AED),
+              titleSmall: TextStyle(
+                color: brandAppTheme.primaryBrandColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
             inputDecorationTheme: InputDecorationThemeData(
               contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-              hintStyle: TextStyle(color: Color(0xFF828485)),
+              hintStyle: TextStyle(color: brandAppTheme.noteBrandColor),
               filled: true,
-              hoverColor: Color(0xFFE7E8EB),
-              fillColor: Color(0xFFE7E8EB),
+              hoverColor: brandAppTheme.backgroundInputBrandColor,
+              fillColor: brandAppTheme.backgroundInputBrandColor,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Color(0xFFE4E4E7)),
+                borderSide: BorderSide(color: brandAppTheme.borderBrandColor),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Color(0xFFE4E4E7)),
+                borderSide: BorderSide(color: brandAppTheme.borderBrandColor),
               ),
             ),
           ),
-
+          themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
           initialRoute: '/',
           routes: {
             "/": (context) => SplashScreen(),
-            "/app": (context) => App(),
+            "/app": (context) => App(onChangedMode: () => onChangedMode()),
             "/login": (context) => LoginScreen(),
             "/register": (context) => RegisterScreen(),
           },

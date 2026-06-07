@@ -4,6 +4,7 @@ import 'package:appchat_flutter/models/actor.dart';
 import 'package:appchat_flutter/models/author_detail.dart';
 import 'package:appchat_flutter/models/comment.dart';
 import 'package:appchat_flutter/models/movie.dart';
+import 'package:appchat_flutter/theme/brand_theme.dart';
 import 'package:appchat_flutter/widgets/error_widget_custom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,6 +20,7 @@ class MovieDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
     return Scaffold(
       appBar: null,
       body: Column(
@@ -71,18 +73,24 @@ class MovieDetailScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 19,
                                 overflow: TextOverflow.ellipsis,
+                                color: brandAppTheme.textColor,
                               ),
                               maxLines: 1,
                             ),
                             const SizedBox(height: 10),
                             Row(
                               children: [
-                                Icon(Icons.star_rounded, size: 17),
+                                Icon(
+                                  Icons.star_rounded,
+                                  size: 17,
+                                  color: brandAppTheme.textColor,
+                                ),
                                 Text(
                                   movie.date,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 15,
+                                    color: brandAppTheme.textColor,
                                   ),
                                 ),
                                 _buildDot(),
@@ -91,6 +99,7 @@ class MovieDetailScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 15,
+                                    color: brandAppTheme.textColor,
                                   ),
                                 ),
                                 _buildDot(),
@@ -100,6 +109,7 @@ class MovieDetailScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 15,
+                                    color: brandAppTheme.textColor,
                                   ),
                                 ),
                               ],
@@ -121,8 +131,8 @@ class MovieDetailScreen extends StatelessWidget {
                               vertical: 3,
                               horizontal: 8,
                             ),
-                            decoration: const BoxDecoration(
-                              color: Color(0xfff1f5f9),
+                            decoration: BoxDecoration(
+                              color: brandAppTheme.containerColor,
                               borderRadius: BorderRadiusGeometry.all(
                                 Radius.circular(50),
                               ),
@@ -130,7 +140,7 @@ class MovieDetailScreen extends StatelessWidget {
                             child: Text(
                               genre,
                               style: TextStyle(
-                                color: Colors.black,
+                                color: brandAppTheme.textColor,
                                 fontWeight: FontWeight.w400,
                                 fontSize: 17,
                               ),
@@ -148,13 +158,17 @@ class MovieDetailScreen extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 19,
+                        color: brandAppTheme.textColor,
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     movie.overview,
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: brandAppTheme.textColor,
+                    ),
                     textAlign: TextAlign.justify,
                   ),
                   const SizedBox(height: 12),
@@ -177,7 +191,7 @@ class MovieDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       "Xem bình luận",
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
@@ -201,7 +215,7 @@ class MovieDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       "Xem diễn viên",
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
@@ -227,6 +241,7 @@ class MovieDetailScreen extends StatelessWidget {
   Widget _buildCommentList(double screenHeight) {
     return BlocBuilder<MovieDetailCubit, MovieDetailState>(
       builder: (context, state) {
+        final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
         if (state.status == StatusType.loading) {
           return _buildSkeletonComments();
         }
@@ -246,8 +261,8 @@ class MovieDetailScreen extends StatelessWidget {
           snapSizes: [1.0],
           builder: (context, scrollController) => Container(
             height: screenHeight,
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            decoration: BoxDecoration(
+              color: brandAppTheme.containerColor,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
@@ -257,7 +272,7 @@ class MovieDetailScreen extends StatelessWidget {
               controller: scrollController,
               itemCount: state.comments.length,
               itemBuilder: (context, index) =>
-                  _buildCommentItem(state.comments[index]),
+                  _buildCommentItem(state.comments[index], brandAppTheme),
             ),
           ),
         );
@@ -265,7 +280,7 @@ class MovieDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCommentItem(Comment comment) {
+  Widget _buildCommentItem(Comment comment, BrandAppTheme brandAppTheme) {
     final AuthorDetails author = comment.authorDetails;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -297,7 +312,10 @@ class MovieDetailScreen extends StatelessWidget {
                     Flexible(
                       child: Text(
                         author.name.isNotEmpty ? author.name : "Ẩn danh",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: brandAppTheme.textColor,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -305,14 +323,17 @@ class MovieDetailScreen extends StatelessWidget {
                     Text(
                       "@${author.username}",
                       style: TextStyle(
-                        color: Colors.grey.shade600,
+                        color: brandAppTheme.noteBrandColor,
                         fontSize: 12,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(comment.content, style: const TextStyle(height: 1.4)),
+                Text(
+                  comment.content,
+                  style: TextStyle(height: 1.4, color: brandAppTheme.textColor),
+                ),
               ],
             ),
           ),
@@ -324,6 +345,7 @@ class MovieDetailScreen extends StatelessWidget {
   Widget _buildActorList(double screenHeight) {
     return BlocBuilder<MovieDetailCubit, MovieDetailState>(
       builder: (context, state) {
+        final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
         if (state.status == StatusType.loading) {
           return _buildSkeletonActors(screenHeight);
         }
@@ -339,15 +361,22 @@ class MovieDetailScreen extends StatelessWidget {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: state.actors.length,
-            itemBuilder: (context, index) =>
-                _buildActorItem(state.actors[index], screenHeight),
+            itemBuilder: (context, index) => _buildActorItem(
+              state.actors[index],
+              screenHeight,
+              brandAppTheme,
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildActorItem(Actor actor, double screenHeight) {
+  Widget _buildActorItem(
+    Actor actor,
+    double screenHeight,
+    BrandAppTheme brandAppTheme,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Column(
@@ -368,7 +397,7 @@ class MovieDetailScreen extends StatelessWidget {
                 : null,
           ),
           const SizedBox(width: 12),
-          Text(actor.name),
+          Text(actor.name, style: TextStyle(color: brandAppTheme.textColor)),
         ],
       ),
     );

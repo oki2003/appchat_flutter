@@ -1,32 +1,42 @@
 import 'package:appchat_flutter/features/auth/cubit/auth_cubit.dart';
 import 'package:appchat_flutter/models/app_user.dart';
+import 'package:appchat_flutter/theme/brand_theme.dart';
 import 'package:appchat_flutter/widgets/user_presence.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, required this.onChangedMode});
+  final VoidCallback onChangedMode;
 
   @override
   Widget build(BuildContext context) {
     final AppUser? curUser = context.read<AuthCubit>().state.appUser;
-    final double layoutHeight = (MediaQuery.of(context).size.height / 3) / 2;
+    final double layoutHeight = (MediaQuery.of(context).size.height / 3) / 3;
+    final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildHeader(curUser, layoutHeight),
-        _buildOption(),
+        _buildHeader(curUser, layoutHeight, brandAppTheme),
+        _buildOption(brandAppTheme),
         _buildLogoutButton(context),
       ],
     );
   }
 
-  Widget _buildHeader(AppUser? curUser, double layoutHeight) {
+  Widget _buildHeader(
+    AppUser? curUser,
+    double layoutHeight,
+    BrandAppTheme brandAppTheme,
+  ) {
     return SizedBox(
       height: layoutHeight * 2,
       child: Stack(
         children: [
-          Container(height: layoutHeight, color: Color(0xFF7C3AED)),
+          Container(
+            height: layoutHeight,
+            color: brandAppTheme.primaryBrandColor,
+          ),
           Align(
             alignment: Alignment.center,
             child: Padding(
@@ -34,7 +44,7 @@ class ProfileScreen extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: brandAppTheme.containerColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -98,10 +108,10 @@ class ProfileScreen extends StatelessWidget {
                             children: [
                               Text(
                                 curUser?.displayName ?? "",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 20,
-                                  color: Color(0xFF1E293B),
+                                  color: brandAppTheme.textColor,
                                   letterSpacing: -0.2,
                                 ),
                               ),
@@ -110,10 +120,10 @@ class ProfileScreen extends StatelessWidget {
                                 curUser?.userName == null
                                     ? ""
                                     : "@${curUser!.userName}",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   fontSize: 17,
-                                  color: Color(0xFF64748B),
+                                  color: brandAppTheme.noteBrandColor,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -133,13 +143,17 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOption() {
+  Widget _buildOption(BrandAppTheme brandAppTheme) {
+    final TextStyle textStyle = TextStyle(
+      fontSize: 16,
+      color: brandAppTheme.textColor,
+    );
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SizedBox(
         width: double.infinity,
         child: Material(
-          color: Colors.white,
+          color: brandAppTheme.containerColor,
           elevation: 0.4,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -153,25 +167,40 @@ class ProfileScreen extends StatelessWidget {
             children: [
               _buildOptionItem(
                 Icons.description_outlined,
-                "Điều khoản sử dụng",
+                Text("Điều khoản sử dụng", style: textStyle),
                 isFirst: true,
                 () {},
               ),
               Divider(color: Colors.black.withValues(alpha: 0.1), height: 0.8),
               _buildOptionItem(
                 Icons.shield_outlined,
-                "Chính sách bảo vệ dữ liệu cá nhân",
+                Text("Chính sách bảo vệ dữ liệu cá nhân", style: textStyle),
                 () {},
               ),
               Divider(color: Colors.black.withValues(alpha: 0.1), height: 0.8),
               _buildOptionItem(
                 Icons.language_outlined,
-                "Đổi ngôn ngữ",
+                Text("Đổi ngôn ngữ", style: textStyle),
                 isLast: true,
                 () {},
               ),
               Divider(color: Colors.black.withValues(alpha: 0.1), height: 0.8),
-              _buildOptionItem(Icons.support_agent_outlined, "Hỗ trợ", () {}),
+              _buildOptionItem(
+                Icons.support_agent_outlined,
+                Text("Hỗ trợ", style: textStyle),
+                () {},
+              ),
+              Divider(color: Colors.black.withValues(alpha: 0.1), height: 0.8),
+              _buildOptionItem(
+                Icons.dark_mode_outlined,
+                Text("Chế độ tối", style: textStyle),
+                isLast: true,
+                secondIcon: Icons.toggle_off_rounded,
+                () {
+                  debugPrint("hehehe");
+                  onChangedMode();
+                },
+              ),
             ],
           ),
         ),
@@ -181,10 +210,11 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildOptionItem(
     IconData firstIcon,
-    String text,
+    Text text,
     onTap, {
     bool isFirst = false,
     bool isLast = false,
+    IconData? secondIcon,
   }) {
     return InkWell(
       borderRadius: BorderRadius.only(
@@ -202,8 +232,8 @@ class ProfileScreen extends StatelessWidget {
           children: [
             Icon(firstIcon, size: 30),
             SizedBox(width: 10),
-            Expanded(child: Text(text, style: TextStyle(fontSize: 16))),
-            const Icon(Icons.chevron_right_outlined, size: 30),
+            Expanded(child: text),
+            Icon(secondIcon ?? Icons.chevron_right_outlined, size: 30),
           ],
         ),
       ),
@@ -227,7 +257,7 @@ class ProfileScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.logout_rounded),
+            const Icon(Icons.logout_rounded, color: Colors.white),
             const SizedBox(width: 10),
             Text(
               "Đăng xuất",

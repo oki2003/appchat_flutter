@@ -3,6 +3,7 @@ import 'package:appchat_flutter/features/movie/cubit/movie_cubit.dart';
 import 'package:appchat_flutter/features/movie_detail/cubit/movie_detail_cubit.dart';
 import 'package:appchat_flutter/features/movie_detail/movie_detail_screen.dart';
 import 'package:appchat_flutter/models/movie.dart';
+import 'package:appchat_flutter/theme/brand_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,6 +13,7 @@ class MovieScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
+    final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: BlocBuilder<MovieCubit, MovieState>(
@@ -23,12 +25,19 @@ class MovieScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildBanner(state.movies.first, screenHeight),
-              const Text("Tất cả", style: TextStyle(height: 4)),
+              Text(
+                "Tất cả",
+                style: TextStyle(height: 4, color: brandAppTheme.textColor),
+              ),
               Expanded(
                 child: ListView.separated(
                   itemCount: state.movies.length,
-                  itemBuilder: (context, index) =>
-                      _buildMovie(state.movies[index], screenHeight, context),
+                  itemBuilder: (context, index) => _buildMovie(
+                    state.movies[index],
+                    screenHeight,
+                    context,
+                    brandAppTheme,
+                  ),
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 20),
                 ),
@@ -72,29 +81,33 @@ class MovieScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 "NỔI BẬT",
                 style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
               Text(
                 movie.title,
-                style: TextStyle(color: Colors.white, fontSize: 21),
+                style: const TextStyle(color: Colors.white, fontSize: 21),
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(Icons.star_rounded, color: Colors.yellow, size: 20),
+                  const Icon(
+                    Icons.star_rounded,
+                    color: Colors.yellow,
+                    size: 20,
+                  ),
                   Text(
                     movie.voteAverage.toStringAsFixed(1),
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   const SizedBox(width: 10),
-                  Icon(
+                  const Icon(
                     Icons.calendar_month_rounded,
                     color: Colors.grey,
                     size: 20,
                   ),
-                  Text(movie.date, style: TextStyle(color: Colors.white)),
+                  Text(movie.date, style: const TextStyle(color: Colors.white)),
                 ],
               ),
             ],
@@ -104,7 +117,12 @@ class MovieScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMovie(Movie movie, double screenHeight, BuildContext context) {
+  Widget _buildMovie(
+    Movie movie,
+    double screenHeight,
+    BuildContext context,
+    BrandAppTheme brandAppTheme,
+  ) {
     final heightItem = screenHeight / 7;
     return InkWell(
       onTap: () => Navigator.push(
@@ -139,7 +157,7 @@ class MovieScreen extends StatelessWidget {
                   Text(
                     movie.title,
                     style: TextStyle(
-                      color: Colors.black,
+                      color: brandAppTheme.textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -148,13 +166,13 @@ class MovieScreen extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.calendar_month_rounded,
-                        color: Colors.black.withValues(alpha: 0.6),
+                        color: brandAppTheme.noteBrandColor,
                         size: 17,
                       ),
                       Text(
                         movie.date,
                         style: TextStyle(
-                          color: Colors.black.withValues(alpha: 0.6),
+                          color: brandAppTheme.noteBrandColor,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -170,9 +188,8 @@ class MovieScreen extends StatelessWidget {
                                 vertical: 3,
                                 horizontal: 8,
                               ),
-                              decoration: const BoxDecoration(
-                                color: Color(0xfff1f5f9),
-                                // color: Colors.blue,
+                              decoration: BoxDecoration(
+                                color: brandAppTheme.containerColor,
                                 borderRadius: BorderRadiusGeometry.all(
                                   Radius.circular(50),
                                 ),
@@ -180,7 +197,7 @@ class MovieScreen extends StatelessWidget {
                               child: Text(
                                 genre,
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: brandAppTheme.textColor,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
                                 ),
@@ -192,11 +209,15 @@ class MovieScreen extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.star_rounded, color: Colors.black, size: 17),
+                      Icon(
+                        Icons.star_rounded,
+                        color: brandAppTheme.textColor,
+                        size: 17,
+                      ),
                       Text(
                         movie.voteAverage.toStringAsFixed(1),
                         style: TextStyle(
-                          color: Colors.black,
+                          color: brandAppTheme.textColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

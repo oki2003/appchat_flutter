@@ -7,7 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppViewModel {
-  Map<String, dynamic> categories = {
+  AppViewModel({required this.onChangedMode});
+  final VoidCallback onChangedMode;
+
+  Map<String, dynamic> get categories => {
     'icons': [
       Icons.chat_bubble_outline,
       Icons.explore_outlined,
@@ -22,7 +25,7 @@ class AppViewModel {
         create: (context) => MovieCubit()..fetchMovies(),
         child: MovieScreen(),
       ),
-      ProfileScreen(),
+      ProfileScreen(onChangedMode: onChangedMode),
     ],
     'label': ["Trò chuyện", "Khám phá", "Tôi"],
   };

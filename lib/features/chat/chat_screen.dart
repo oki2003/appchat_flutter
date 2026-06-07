@@ -1,10 +1,10 @@
-import 'package:appchat_flutter/core/overlay/toast_overlay.dart';
 import 'package:appchat_flutter/enums/status_type.dart';
 import 'package:appchat_flutter/features/chat/cubit/chat_cubit.dart';
 import 'package:appchat_flutter/features/chat_detail/cubit/chat_detail_cubit.dart';
 import 'package:appchat_flutter/features/chat_detail/chat_detail_screen.dart';
 import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/models/chat.dart';
+import 'package:appchat_flutter/theme/brand_theme.dart';
 import 'package:appchat_flutter/widgets/error_widget_custom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,6 +58,7 @@ class ChatScreen extends StatelessWidget {
         friend.avatarUrl != null &&
         friend.avatarUrl!.isNotEmpty &&
         !friend.avatarUrl!.contains('default.png');
+    final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
 
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -80,7 +81,7 @@ class ChatScreen extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: brandAppTheme.containerColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -153,20 +154,20 @@ class ChatScreen extends StatelessWidget {
                     children: [
                       Text(
                         friend.displayName,
-                        style: const TextStyle(
+                        style: TextStyle(
+                          color: brandAppTheme.textColor,
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
-                          color: Color(0xFF1E293B),
                           letterSpacing: -0.2,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         chat.lastMessage,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 13,
-                          color: Color(0xFF64748B),
+                          color: brandAppTheme.noteBrandColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

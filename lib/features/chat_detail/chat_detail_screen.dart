@@ -5,6 +5,7 @@ import 'package:appchat_flutter/features/auth/cubit/auth_cubit.dart';
 import 'package:appchat_flutter/features/chat_detail/cubit/chat_detail_cubit.dart';
 import 'package:appchat_flutter/models/app_user.dart';
 import 'package:appchat_flutter/models/message.dart';
+import 'package:appchat_flutter/theme/brand_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math';
@@ -51,12 +52,13 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: true,
-            title: _buildAppBar(friend),
+            title: _buildAppBar(friend, brandAppTheme),
           ),
           body: BlocListener<ChatDetailCubit, ChatDetailState>(
             listener: (context, state) {
@@ -66,7 +68,11 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
             },
             child: Column(
               children: [
-                Divider(color: Color(0xffe5e7eb), height: 1, thickness: 1),
+                Divider(
+                  color: brandAppTheme.noteBrandColor,
+                  height: 1,
+                  thickness: 1,
+                ),
                 BlocBuilder<ChatDetailCubit, ChatDetailState>(
                   builder: (context, state) =>
                       state.status == StatusType.loadmore
@@ -121,8 +127,14 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
                               itemCount: state.messages.length,
                               itemBuilder: (context, index) =>
                                   state.messages[index].senderId == friend.id
-                                  ? _buildFriendMessage(state.messages[index])
-                                  : _buildMyMessage(state.messages[index]),
+                                  ? _buildFriendMessage(
+                                      state.messages[index],
+                                      brandAppTheme,
+                                    )
+                                  : _buildMyMessage(
+                                      state.messages[index],
+                                      brandAppTheme,
+                                    ),
                             ),
                           );
                         },
@@ -158,9 +170,9 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
                           onPressed: () {
                             _isShowOption.value = !_isShowOption.value;
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.grid_view_rounded,
-                            color: Color(0xFF7C3AED),
+                            color: brandAppTheme.primaryBrandColor,
                           ),
                         ),
                         builder: (context, value, child) =>
@@ -199,10 +211,13 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
                           },
                           decoration: InputDecoration(
                             hintText: "Nhập tin nhắn",
-                            hintStyle: TextStyle(fontSize: 17),
+                            hintStyle: TextStyle(
+                              fontSize: 17,
+                              color: brandAppTheme.noteBrandColor,
+                            ),
                             enabledBorder: inputDecoration,
                             focusedBorder: inputDecoration,
-                            fillColor: Color(0xFFe9eaec),
+                            fillColor: brandAppTheme.backgroundInputBrandColor,
                           ),
                         ),
                       ),
@@ -222,7 +237,7 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
                           },
                           icon: Icon(
                             value.text.isEmpty ? Icons.thumb_up : Icons.send,
-                            color: const Color(0xFF7C3AED),
+                            color: brandAppTheme.primaryBrandColor,
                           ),
                         ),
                       ),
@@ -241,7 +256,7 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
     return Text("${friend.displayName} đoạn soạn tin");
   }
 
-  Widget _buildAppBar(AppUser friend) {
+  Widget _buildAppBar(AppUser friend, BrandAppTheme brandAppTheme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 70, horizontal: 0),
       child: Row(
@@ -257,40 +272,40 @@ class _ChatDetailScreen extends State<ChatDetailScreen> {
             friend.displayName,
             style: Theme.of(
               context,
-            ).textTheme.titleMedium?.copyWith(color: Colors.black),
+            ).textTheme.titleMedium?.copyWith(color: brandAppTheme.textColor),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFriendMessage(Message message) {
+  Widget _buildFriendMessage(Message message, BrandAppTheme brandAppTheme) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFe9eaec),
+        decoration: BoxDecoration(
+          color: brandAppTheme.containerColor,
           borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
         child: Text(
           message.content,
-          style: const TextStyle(color: Colors.black, fontSize: 20),
+          style: TextStyle(color: brandAppTheme.textColor, fontSize: 20),
         ),
       ),
     );
   }
 
-  Widget _buildMyMessage(Message message) {
+  Widget _buildMyMessage(Message message, BrandAppTheme brandAppTheme) {
     return Align(
       alignment: Alignment.centerRight,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF7C3AED),
+            decoration: BoxDecoration(
+              color: brandAppTheme.primaryBrandColor,
               borderRadius: BorderRadius.all(Radius.circular(15)),
             ),
             padding: const EdgeInsets.all(10),

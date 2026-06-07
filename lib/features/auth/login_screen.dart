@@ -2,6 +2,7 @@ import 'package:appchat_flutter/core/overlay/loading_overlay.dart';
 import 'package:appchat_flutter/core/overlay/toast_overlay.dart';
 import 'package:appchat_flutter/enums/status_type.dart';
 import 'package:appchat_flutter/features/auth/cubit/auth_cubit.dart';
+import 'package:appchat_flutter/theme/brand_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,6 +27,7 @@ class _LoginScreen extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
     return Scaffold(
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
@@ -48,11 +50,14 @@ class _LoginScreen extends State<LoginScreen> {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.purple, Colors.blue],
+              colors: [
+                brandAppTheme.primaryBrandColor,
+                brandAppTheme.primaryLightBrandColor,
+              ],
             ),
           ),
           child: TweenAnimationBuilder(
@@ -71,14 +76,14 @@ class _LoginScreen extends State<LoginScreen> {
                 ),
               );
             },
-            child: _buildContent(),
+            child: _buildContent(brandAppTheme),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BrandAppTheme brandAppTheme) {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(30),
@@ -170,6 +175,7 @@ class _LoginScreen extends State<LoginScreen> {
                       TextButton(
                         style: TextButton.styleFrom(
                           overlayColor: Colors.transparent,
+                          foregroundColor: brandAppTheme.primaryBrandColor,
                         ),
                         onPressed: () {
                           Navigator.pushReplacementNamed(context, '/register');

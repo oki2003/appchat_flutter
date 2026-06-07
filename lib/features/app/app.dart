@@ -1,12 +1,15 @@
 import 'package:appchat_flutter/features/app/view_model/app.vm.dart';
 import 'package:appchat_flutter/services/firebase_service.dart';
 import 'package:appchat_flutter/services/local_storage.dart';
+import 'package:appchat_flutter/theme/brand_theme.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class App extends StatefulWidget {
-  const App({super.key});
+  const App({super.key, required this.onChangedMode});
+
+  final VoidCallback onChangedMode;
 
   @override
   State<App> createState() => _AppState();
@@ -19,7 +22,7 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-    _appViewModel = AppViewModel();
+    _appViewModel = AppViewModel(onChangedMode: widget.onChangedMode);
     initNotifications();
     super.initState();
   }
@@ -81,19 +84,17 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
+    final BrandAppTheme brandAppTheme = BrandAppTheme(context: context);
     return ListenableBuilder(
       listenable: _appViewModel.currentIndex,
       builder: (context, child) => Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: IndexedStack(
           index: _appViewModel.currentIndex.value,
           children: _appViewModel.categories['widget'].cast<Widget>(),
         ),
-        bottomNavigationBar: Container(
+        bottomNavigationBar: SizedBox(
           height: 70,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: Color(0xFFE4E4E7), width: 1)),
-          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(_appViewModel.categories['icons'].length, (
@@ -106,8 +107,8 @@ class _AppState extends State<App> {
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.all(8),
                   foregroundColor: _appViewModel.currentIndex.value == index
-                      ? Color(0xFF7C3AED)
-                      : Colors.grey,
+                      ? brandAppTheme.primaryBrandColor
+                      : brandAppTheme.noteBrandColor,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
